@@ -15,17 +15,20 @@ connected, the four routines, and the prompts to trigger them.
 | Google Calendar | Live (owner) | Meetings and reminders |
 | Granola | Live | Transcripts including `Borgwarner - General Robotics` (26 Aug), `Robotics and AI perception` (4 Sep) |
 | FullEnrich | Live, 1371 credits | Contact enrichment: verified emails and phones |
-| HubSpot | Connected, empty | Portal 245320761 under `remi@aiworld.eu`. Onboarding not started |
+| HubSpot | Connected, not in use | Portal 245320761 under `remi@aiworld.eu`, empty. Decision taken: Notion is the CRM |
 
-### Two things to fix before they cost you
+### Decisions taken 7 September 2026
 
-1. **Your calendar timezone is set to Europe/Paris while you work Eastern Time.**
-   Every time suggestion Claude makes will be six hours off until you change it
-   in Google Calendar settings.
-2. **HubSpot is empty and sits under a different identity (`remi@aiworld.eu`).**
-   Right now Notion is your real CRM. Decide deliberately: either commit to
-   HubSpot and migrate the 19 summit contacts into it, or keep Notion and stop
-   treating HubSpot as pipeline. Running both half-way is how contacts get lost.
+- **Notion is the CRM.** HubSpot stays disconnected from the workflow. Revisit
+  only if the raise closes and a sales team needs reporting.
+- **GTM and fundraising carry equal weight** through 31 December.
+- **Emails are drafted into Gmail, never sent.** You review and send every one.
+
+### One thing still to fix
+
+**Your calendar timezone is set to Europe/Paris while you work Eastern Time.**
+Every time suggestion will be six hours off until you change it in Google
+Calendar settings. Fix this before you schedule anything with a US buyer.
 
 ---
 
@@ -69,6 +72,7 @@ Claude does:
 3. Scores the fit against the RS series and says plainly if it is a no.
 4. If yes: names the right person to reach, drafts the opening email.
 5. Offers to enrich the contact via FullEnrich before you spend a credit.
+6. Logs the result into the Notion contact list with category and next step.
 
 The scoring question that matters: does their robot need 15 to 30 kg of
 manipulation capacity at a joint where size and weight are constrained? If not,
@@ -88,7 +92,20 @@ Claude does:
 
 ---
 
-## 3. Fundraising support prompts
+## 3. Weighting GTM against the raise
+
+Both tracks run at equal weight to 31 December. The practical test each Friday:
+did the week move at least one buyer forward **and** at least one investor
+conversation forward. If a week produced only one of the two, the Weekly Cedric
+prep should open with that gap rather than a status list.
+
+The dependency to keep in view: your Notion notes say investors are waiting on
+validated actuator performance. The Mass Robotics test plan sits upstream of
+both tracks, so a week spent unblocking it counts as progress on each.
+
+---
+
+## 4. Fundraising support prompts
 
 | Ask | Prompt |
 |---|---|
@@ -105,7 +122,7 @@ conversation is downstream of it.
 
 ---
 
-## 4. GTM prompts
+## 5. GTM prompts
 
 | Ask | Prompt |
 |---|---|
@@ -130,12 +147,12 @@ Most of these have an empty Next Steps column. That is the first hour of work.
 
 ---
 
-## 5. Rules Claude will not break
+## 6. Rules Claude will not break
 
 1. No email leaves without you seeing the draft.
 2. No number goes in a deck or an email without a named source.
 3. No em dash, ever. No banned words from the brand book.
-4. Notion is the source of truth for pipeline until you say otherwise.
+4. Notion is the source of truth for pipeline. HubSpot is not used.
 5. FullEnrich credits are spent only on your explicit go.
 6. Anything touching the contract or the invoice goes through Sophie and gets
    flagged to you before it is drafted.
