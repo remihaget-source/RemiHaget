@@ -1,0 +1,685 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cathédrale de Bayonne LEGO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F8F7F4;--fg:#0E1B3D;--muted:#586078;--card:#FFFFFF;--line:#E2E0DA;--gold:#F5C235;--navy:#0E1B3D;--red:#CA3538;--grid:#EEEDE8;--stroke:#5A5A5A;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0B1828;--fg:#F8F7F4;--muted:#9AA4B8;--card:#13233B;--line:#243652;--grid:#182A42;--stroke:#1A1A1A;}}
+:root[data-theme="dark"]{--bg:#0B1828;--fg:#F8F7F4;--muted:#9AA4B8;--card:#13233B;--line:#243652;--grid:#182A42;--stroke:#1A1A1A;}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:'DM Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;line-height:1.5;font-feature-settings:"tnum" 1}
+.stage{position:relative;height:min(80vh,760px);min-height:440px;background:#BFD9EE;overflow:hidden;transition:background .6s}
+.stage.night{background:#0B1828}
+.stage canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+.stage canvas:active{cursor:grabbing}
+.scrim-top,.scrim-bot{position:absolute;left:0;right:0;pointer-events:none}
+.scrim-top{top:0;height:150px;background:linear-gradient(rgba(14,27,61,.72),rgba(14,27,61,0))}
+.scrim-bot{bottom:0;height:130px;background:linear-gradient(rgba(14,27,61,0),rgba(14,27,61,.78))}
+.ov-title{position:absolute;top:18px;left:20px;right:170px;color:#F8F7F4;pointer-events:none}
+.ov-title h1{margin:0;font-size:clamp(1.7rem,5.2vw,3rem);line-height:1;font-weight:800;letter-spacing:-.02em}
+.ov-title p{margin:8px 0 0;font-size:.95rem;color:#D5DBE7}
+.ov-toggles{position:absolute;top:18px;right:16px;display:flex;flex-direction:column;gap:8px}
+.pill{font:inherit;font-weight:700;font-size:.9rem;border:1.5px solid rgba(248,247,244,.7);background:rgba(14,27,61,.45);color:#F8F7F4;border-radius:999px;padding:7px 14px;cursor:pointer;backdrop-filter:blur(6px)}
+.pill[aria-pressed="true"]{background:var(--gold);color:#0E1B3D;border-color:var(--gold)}
+.ov-bar{position:absolute;left:0;right:0;bottom:0;padding:14px 16px 16px;display:flex;align-items:center;gap:10px;color:#F8F7F4}
+.ov-bar button{font:inherit;font-weight:800;border:0;border-radius:10px;min-width:46px;height:44px;cursor:pointer;background:#F8F7F4;color:#0E1B3D;font-size:1.1rem}
+.ov-bar button.play{background:var(--gold)}
+.ov-bar button:disabled{opacity:.35;cursor:default}
+.ov-bar input[type=range]{flex:1;accent-color:var(--gold);min-width:60px}
+.ov-bar .lbl{font-weight:700;white-space:nowrap;font-size:.95rem;min-width:7.5em;text-align:right}
+.hint{position:absolute;right:16px;bottom:74px;color:#D5DBE7;font-size:.8rem;pointer-events:none}
+.fail{position:absolute;inset:0;display:none;align-items:center;justify-content:center;color:#0E1B3D;padding:24px;text-align:center}
+button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+main{max-width:1000px;margin:0 auto;padding:22px 16px 56px}
+.stephead{display:flex;align-items:baseline;gap:14px;margin:0 0 6px}
+.stepnum{font-size:3.4rem;font-weight:800;line-height:.9;color:var(--gold);min-width:1.3em}
+.stephead h2{margin:0;font-size:1.4rem;line-height:1.2}
+.stephead small{display:block;color:var(--muted);font-size:.92rem;font-weight:500}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+.notes{margin:4px 0 0;padding-left:1.1em}
+.notes li{margin:5px 0}
+.panel{border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--card)}
+.panel h3{margin:0 0 6px;font-size:.95rem}
+.panel svg{display:block;width:100%;height:auto}
+.panel .legend svg{width:18px;height:18px;display:inline}
+.stepparts{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:4px 12px 4px 6px;font-size:.9rem;background:var(--card)}
+.sw{width:18px;height:18px;border-radius:4px;border:1px solid rgba(0,0,0,.35);flex:none;display:inline-block}
+.sw.round{border-radius:50%}
+section{margin-top:44px}
+section h2{font-size:1.5rem;margin:0 0 6px}
+section>p{color:var(--muted);margin:0 0 14px;max-width:70ch}
+.tips{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+.tips div{border-top:3px solid var(--gold);padding-top:8px}
+.tips b{display:block;margin-bottom:2px}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.facts div{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--card)}
+.facts strong{display:block;font-size:1.6rem;line-height:1.1;font-weight:800}
+.facts span{color:var(--muted);font-size:.9rem}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{background:var(--grid)}
+td.q{text-align:right;font-weight:700}
+tr:last-child td{border-bottom:0}
+.btn{font:inherit;font-weight:700;border:2px solid var(--fg);background:transparent;color:var(--fg);border-radius:10px;padding:9px 14px;cursor:pointer;margin-top:12px}
+textarea{width:100%;min-height:160px;margin-top:10px;font:12px/1.4 ui-monospace,Menlo,Consolas,monospace;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:8px}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:8px;font-size:.82rem;color:var(--muted)}
+.legend span{display:flex;align-items:center;gap:6px}
+@media (max-width:760px){
+  .stage{height:66vh;min-height:400px}
+  .grid2{grid-template-columns:1fr}
+  .ov-title{right:110px}
+  .ov-title p{display:none}
+  .hint{display:none}
+  .ov-bar .lbl{display:none}
+  .ov-bar{gap:8px;padding:12px}
+}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <canvas id="c" aria-label="Maquette 3D de la cathédrale de Bayonne, faites glisser pour tourner"></canvas>
+  <div class="scrim-top"></div><div class="scrim-bot"></div>
+  <div class="ov-title"><h1>La cathédrale de Bayonne</h1><p>Notice de montage en 3D : <b id="fPieces">0</b> pièces, 26 niveaux, environ 28 cm de haut avec les croix.</p></div>
+  <div class="ov-toggles">
+    <button class="pill" id="night" aria-pressed="false">Nuit</button>
+    <button class="pill" id="spin" aria-pressed="true">Rotation</button>
+  </div>
+  <div class="hint">Glissez pour tourner, molette ou pincement pour zoomer</div>
+  <div class="ov-bar">
+    <button id="prev" aria-label="Étape précédente">‹</button>
+    <button id="play" class="play" aria-label="Lancer le montage">▶</button>
+    <input id="range" type="range" min="0" max="28" value="28" aria-label="Choisir une étape">
+    <button id="next" aria-label="Étape suivante">›</button>
+    <span class="lbl" id="lbl"></span>
+  </div>
+  <div class="fail" id="fail">La vue 3D n'a pas pu se charger. Les plans étape par étape restent disponibles plus bas.</div>
+</div>
+<main>
+  <div class="stephead"><div class="stepnum" id="num">0</div><h2 id="title"></h2></div>
+  <div class="grid2">
+    <div>
+      <ul class="notes" id="notes"></ul>
+      <div class="stepparts" id="stepparts"></div>
+    </div>
+    <div class="panel"><h3 id="planTitle"></h3><div id="plan"></div>
+      <div class="legend" id="legend">
+        <span><i class="sw" style="background:#A0A5A9;opacity:.5"></i>niveau du dessous</span>
+        <span><svg width="18" height="18" viewBox="0 0 18 18"><rect x="1" y="1" width="16" height="16" rx="2" fill="none" stroke="#888" stroke-dasharray="3 2"/></svg>pièce haute déjà posée</span>
+        <span><svg width="18" height="18" viewBox="0 0 18 18"><rect x="1" y="1" width="16" height="16" rx="2" fill="#6C6E68"/><path d="M5 11h8l-4 5z" fill="#F5C235"/></svg>pente, vers le bas</span>
+        <span><svg width="18" height="18" viewBox="0 0 18 18"><rect x="1" y="1" width="8" height="16" fill="#1F3FA8"/><rect x="9" y="1" width="8" height="16" fill="#C91A09"/></svg>vitrail transparent</span>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <h2>Conseils de montage</h2>
+    <div class="tips">
+      <div><b>Trois chantiers par niveau</b>Chaque niveau fait monter ensemble la cathédrale, les deux tours et le cloître. Posez tout le niveau avant de passer au suivant.</div>
+      <div><b>Deux pierres</b>Beige pour la pierre ocre des parties médiévales, blanc pour les flèches ajoutées au XIXe siècle. Beige foncé pour les angles, contreforts et corniches.</div>
+      <div><b>Les pièces hautes</b>Cadre du portail (6 niveaux), arche du portail (2 niveaux) et cônes des flèches (2 niveaux) se posent une seule fois. Aux niveaux suivants, le plan les montre en pointillés.</div>
+      <div><b>Repérage</b>Les chiffres au-dessus du plan numérotent les colonnes de 1 à 32, de gauche à droite en regardant la façade. Le bord avant de la plaque est en bas du plan.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Du monument à la maquette</h2>
+    <p>Le modèle suit le plan en croix de la cathédrale Sainte-Marie. Les hauteurs sont légèrement tassées pour que tout tienne sur une plaque 32x32.</p>
+    <div class="facts">
+      <div><strong>85 m</strong><span>Hauteur des deux flèches, achevées au XIXe siècle par Émile Boeswillwald. Ici 26 niveaux.</span></div>
+      <div><strong>77 m</strong><span>Longueur de la nef, pour 26,5 m sous voûte. Ici 10 niveaux de murs et deux rangs de toiture.</span></div>
+      <div><strong>7</strong><span>Chapelles rayonnantes autour du chœur. Ici sept vitraux sur le mur du déambulatoire, en plan simplifié.</span></div>
+      <div><strong>Sud</strong><span>Le grand cloître gothique des XIIIe et XIVe siècles, sur le flanc sud. Ici à droite de la nef.</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Liste complète des pièces</h2>
+    <p>Calculée à partir des plans. Les références sont celles de BrickLink.</p>
+    <div class="tablewrap"><table id="bom"><thead><tr><th>Couleur</th><th>Pièce</th><th>Réf.</th><th style="text-align:right">Qté</th></tr></thead><tbody></tbody></table></div>
+    <button class="btn" id="xmlBtn">Copier la liste BrickLink (XML, +10 %)</button>
+    <textarea id="xml" readonly hidden aria-label="Liste BrickLink au format XML"></textarea>
+  </section>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// MODEL START
+const NL=26;
+const K=(x,y)=>x+','+y;
+function splitLen(n,stagger,sizes){sizes=sizes||[6,4,3,2,1];const out=[];let r=n;if(stagger&&n>=5){out.push(2);r-=2;}while(r>0){const s=sizes.find(v=>v<=r);out.push(s);r-=s;}return out;}
+// Emprises (coordonnées de la plaque, x de gauche à droite, y du bord avant vers le fond)
+const TOWERS=[{x0:2,x1:6,cx:4,outer:2},{x0:13,x1:17,cx:15,outer:17}];const TY0=3,TY1=7,TCY=5;
+const BUTT=[[2,10],[2,13],[17,10],[17,13]];
+const CA=19,CB=30,CC=5,CD=15;
+const TALL=[
+  {l0:1,h:6,cells:[[8,3],[9,3],[10,3],[11,3]],c:'S',part:'door',kind:'door',out:[0,-1]},
+  {l0:7,h:2,cells:[[7,3],[8,3],[9,3],[10,3],[11,3],[12,3]],c:'Y',part:'arch',kind:'arch',out:[0,-1]}
+];
+TOWERS.forEach(T=>{const cs=[];for(let x=T.cx-1;x<=T.cx+1;x++)for(let y=TCY-1;y<=TCY+1;y++)cs.push([x,y]);TALL.push({l0:22,h:2,cells:cs,c:'W',part:'c3',kind:'cone3'});});
+const glass=(x,y,l)=>(x+y+l)%2?'Q':'R';
+
+function buildLevel(l){
+  const cells=new Map(),groups=[],used=new Set();
+  const force=(x,y,c,t)=>cells.set(K(x,y),{x,y,c,t:t||'b'});
+  const put=(x,y,c,t)=>{if(!cells.has(K(x,y)))force(x,y,c,t);};
+  const add=(list,c,part,extra)=>{groups.push(Object.assign({cells:list,c,part,t:'b',kind:'brick',h:1},extra||{}));list.forEach(p=>used.add(K(p[0],p[1])));};
+  const spec=(list,c,part,kind,extra)=>{list.forEach(p=>force(p[0],p[1],c,kind));add(list,c,part,Object.assign({kind},extra||{}));};
+  const win=(x,y,c)=>force(x,y,c||glass(x,y,l),'win');
+  const fill=(x0,x1,y0,y1,c)=>{for(let x=x0;x<=x1;x++)for(let y=y0;y<=y1;y++)put(x,y,c);};
+  const ring=(x0,x1,y0,y1,c,cc)=>{for(let x=x0;x<=x1;x++)for(let y=y0;y<=y1;y++)if(x===x0||x===x1||y===y0||y===y1)put(x,y,((x===x0||x===x1)&&(y===y0||y===y1))?cc:c);};
+  const pair=(axis,fix,i,n)=>{const cs=[];for(let j=0;j<n;j++){if(axis==='x')cs.push([i+j,fix],[i+j,fix+1]);else cs.push([fix,i+j],[fix+1,i+j]);}return cs;};
+  const slopeRun=(axis,fix,from,to,out,c)=>{let i=from;splitLen(to-from+1,false,[2,1]).forEach(n=>{spec(pair(axis,fix,i,n),c,n===2?'3039':'3040','slope',{out});i+=n;});};
+  const ridgeRun=(axis,fix,from,to,c)=>{let i=from;splitLen(to-from+1,false,[2,1]).forEach(n=>{spec(pair(axis,fix,i,n),c,n===2?'3043':'3044','ridge',{axis});i+=n;});};
+  const corner=(x,y,ox,oy,c)=>spec([[x,y],[x+1,y],[x,y+1],[x+1,y+1]],c,'3045','corner',{out:[ox,oy]});
+  const hip=(a,b,c,d,s,col)=>{
+    if(s.f&&s.l)corner(a,c,-1,-1,col);if(s.f&&s.r)corner(b-1,c,1,-1,col);
+    if(s.b&&s.l)corner(a,d-1,-1,1,col);if(s.b&&s.r)corner(b-1,d-1,1,1,col);
+    const xa=s.l?a+2:a,xb=s.r?b-2:b,ya=s.f?c+2:c,yb=s.b?d-2:d;
+    if(s.f)slopeRun('x',c,xa,xb,[0,-1],col);if(s.b)slopeRun('x',d-1,xa,xb,[0,1],col);
+    if(s.l)slopeRun('y',a,ya,yb,[-1,0],col);if(s.r)slopeRun('y',b-1,ya,yb,[1,0],col);
+  };
+  // ---- Pièces hautes
+  TALL.forEach(T=>{
+    if(l<T.l0||l>=T.l0+T.h)return;
+    if(l===T.l0)spec(T.cells,T.c,T.part,T.kind,{h:T.h,out:T.out});
+    else T.cells.forEach(p=>{force(p[0],p[1],T.c,'occ');used.add(K(p[0],p[1]));});
+  });
+  // ---- Tours et flèches
+  TOWERS.forEach(T=>{
+    const {x0,x1,cx,outer}=T;
+    if(l<=17){
+      if(l>=13&&l<=16){win(cx,TY0,'T');win(cx,TY1,'T');win(x0,TCY,'T');win(x1,TCY,'T');if(l===14||l===15){win(cx-1,TY0,'T');win(cx+1,TY0,'T');}}
+      if([3,4,7,8].includes(l))win(cx,TY0,'T');
+      if(l===5||l===6)win(outer,TCY,'T');
+      ring(x0,x1,TY0,TY1,l===10||l===17?'Y':'S','Y');
+    }else if(l===18)fill(x0,x1,TY0,TY1,'W');
+    else{
+      const cp=[[x0,TY0],[x1,TY0],[x0,TY1],[x1,TY1]];
+      if(l<=22)cp.forEach(p=>spec([p],'W','r','round'));
+      else if(l===23)cp.forEach(p=>spec([p],'W','c1','cone1'));
+      if(l===19)fill(x0,x1,TY0,TY1,'W');
+      if(l===20||l===21)[[cx,TCY-1],[cx,TCY],[cx,TCY+1],[cx-1,TCY],[cx+1,TCY]].forEach(p=>put(p[0],p[1],'W'));
+      if(l===24||l===25)spec([[cx,TCY]],'W','r','round');
+      if(l===26)spec([[cx,TCY]],'W','c1','cone1');
+    }
+  });
+  // ---- Façade entre les tours
+  if(l<=6){put(7,3,'S');put(12,3,'S');}
+  if(l===9||l===10){win(9,3);win(10,3);const c=l===10?'Y':'S';[7,8,11,12].forEach(x=>put(x,3,c));}
+  if(l===11)fill(7,12,3,3,'S');
+  if(l===12)fill(8,11,3,3,'S');
+  if(l===13)fill(9,10,3,3,'Y');
+  // ---- Grands murs : nef, chœur, transept
+  if(l<=10){
+    const hc=l===10?'Y':'S',clere=l===8||l===9;
+    for(let y=4;y<=26;y++)[7,12].forEach(x=>{if(clere&&[8,9,11,12,14,15,23,24].includes(y))win(x,y);put(x,y,y===26?'Y':hc);});
+    for(let x=8;x<=11;x++){if(clere&&(x===9||x===10))win(x,26);put(x,26,hc);}
+    [[1,6,1,[3,4]],[13,18,18,[15,16]]].forEach(([a,b,end,wx])=>{
+      for(let y=16;y<=21;y++){if(l>=3&&l<=9&&(y===18||y===19))win(end,y);put(end,y,y===16||y===21?'Y':hc);}
+      for(let x=a;x<=b;x++)[16,21].forEach(y=>{if(clere&&wx.includes(x))win(x,y);put(x,y,hc);});
+    });
+  }
+  // ---- Bas-côtés et déambulatoire
+  if(l<=5){
+    const aw=l>=2&&l<=4;
+    [3,16].forEach(x=>{
+      for(let y=8;y<=15;y++){if(aw&&[8,9,11,12,14,15].includes(y))win(x,y);put(x,y,'S');}
+      for(let y=22;y<=30;y++){if(aw&&(y===24||y===27))win(x,y);put(x,y,y===30?'Y':'S');}
+    });
+    for(let x=4;x<=15;x++){if(aw&&[6,9,10,13].includes(x))win(x,30);put(x,30,'S');}
+  }
+  // ---- Contreforts et arcs-boutants
+  BUTT.forEach(([x,y])=>{if(l<=6)put(x,y,'Y');else if(l===7)spec([[x,y]],'Y','r','round');else if(l===8)spec([[x,y]],'Y','c1','cone1');});
+  if(l===8)[10,13].forEach(y=>{spec([[3,y],[4,y],[5,y],[6,y]],'Y','fly','fly',{out:[-1,0]});spec([[13,y],[14,y],[15,y],[16,y]],'Y','fly','fly',{out:[1,0]});});
+  // ---- Toitures basses
+  if(l===6){
+    hip(3,6,8,15,{l:1},'D');fill(5,6,8,15,'D');
+    hip(13,16,8,15,{r:1},'D');fill(13,14,8,15,'D');
+    hip(3,16,22,30,{b:1,l:1,r:1},'D');fill(5,6,22,28,'D');fill(13,14,22,28,'D');fill(7,12,27,28,'D');
+  }
+  if(l===7){slopeRun('y',5,8,15,[-1,0],'D');slopeRun('y',13,8,15,[1,0],'D');hip(5,14,22,28,{b:1,l:1,r:1},'D');}
+  // ---- Grandes toitures
+  if(l===11){
+    hip(7,12,4,26,{b:1,l:1,r:1},'D');fill(9,10,4,24,'D');
+    hip(1,6,16,21,{f:1,b:1},'D');fill(1,6,18,19,'D');
+    hip(13,18,16,21,{f:1,b:1},'D');fill(13,18,18,19,'D');
+  }
+  if(l===12){ridgeRun('y',9,4,24,'D');ridgeRun('x',18,1,6,'D');ridgeRun('x',18,13,18,'D');}
+  // ---- Cloître
+  if(l<=3){
+    for(let x=CA;x<=CB;x++)for(let y=CC;y<=CD;y++){
+      if(!(x===CA||x===CB||y===CC||y===CD))continue;
+      if(l<=2&&y===CC&&(x===24||x===25))continue;
+      put(x,y,(x===CA||x===CB)&&(y===CC||y===CD)?'Y':'S');
+    }
+    for(let x=CA+1;x<=CB-1;x++)for(let y=CC+1;y<=CD-1;y++){
+      if(!(x===CA+1||x===CB-1||y===CC+1||y===CD-1))continue;
+      if(l===3)put(x,y,'S');
+      else if((x+y)%2===0||((x===CA+1||x===CB-1)&&(y===CC+1||y===CD-1)))spec([[x,y]],'S','r','round');
+    }
+  }
+  if(l===4)hip(CA,CB,CC,CD,{f:1,b:1,l:1,r:1},'D');
+  // ---- Regroupement automatique en briques 1xN
+  cells.forEach(cl=>{if(cl.t==='win'&&!used.has(K(cl.x,cl.y)))add([[cl.x,cl.y]],cl.c,'1x1',{t:'win'});});
+  const free=(x,y,c)=>{const cl=cells.get(K(x,y));return !!cl&&cl.t==='b'&&cl.c===c&&!used.has(K(x,y));};
+  const pass=(dir,minLen)=>{
+    const dx=dir==='x'?1:0,dy=1-dx;
+    const list=[...cells.values()].filter(cl=>cl.t==='b'&&!used.has(K(cl.x,cl.y)));
+    list.sort(dir==='x'?(a,b)=>a.y-b.y||a.x-b.x:(a,b)=>a.x-b.x||a.y-b.y);
+    for(const cl of list){
+      if(used.has(K(cl.x,cl.y))||free(cl.x-dx,cl.y-dy,cl.c))continue;
+      const run=[];let x=cl.x,y=cl.y;while(free(x,y,cl.c)){run.push([x,y]);x+=dx;y+=dy;}
+      if(run.length<minLen)continue;
+      let i=0;splitLen(run.length,(l+cl.x+cl.y)%2===0).forEach(n=>{add(run.slice(i,i+n),cl.c,'1x'+n);i+=n;});
+    }
+  };
+  const pref=l%2?'x':'y',other=pref==='x'?'y':'x';
+  pass(pref,2);pass(other,1);pass(pref,1);
+  return {l,cells,groups};
+}
+const LV=[];for(let l=1;l<=NL;l++)LV.push(buildLevel(l));
+// MODEL END
+// ================= Catalogue
+const COL={
+  S:{n:'Beige (Tan)',hex:'#E4CD9E',bl:2},Y:{n:'Beige foncé',hex:'#958A73',bl:69},W:{n:'Blanc',hex:'#F2F2F0',bl:1},
+  D:{n:'Gris foncé',hex:'#6C6E68',bl:85},Q:{n:'Bleu foncé transparent',hex:'#1F3FA8',bl:14},R:{n:'Rouge transparent',hex:'#C91A09',bl:17},
+  T:{n:'Noir transparent',hex:'#3B3F46',bl:13},N:{n:'Brun rougeâtre',hex:'#582A12',bl:88},K:{n:'Noir',hex:'#1B1B1B',bl:11},
+  V:{n:'Vert',hex:'#237841',bl:6},Z:{n:'Jaune transparent',hex:'#F5CD2F',bl:15}
+};
+const COLORDER='SYWDQRTNKVZ';
+const CAT={
+  '1x1':['3005','Brique 1x1'],'1x2':['3004','Brique 1x2'],'1x3':['3622','Brique 1x3'],'1x4':['3010','Brique 1x4'],'1x6':['3009','Brique 1x6'],
+  'r':['3062b','Brique ronde 1x1'],'c1':['4589','Cône 1x1'],'c3':['6233','Cône 3x3x2'],
+  'door':['60596','Cadre de porte 1x4x6'],'doorp':['60616','Porte 1x4x6'],'arch':['15254','Arche 1x6x2'],'fly':['61678','Pente incurvée 4x1'],
+  '3039':['3039','Pente 45° 2x2'],'3040':['3040','Pente 45° 2x1'],'3045':['3045','Pente 45° 2x2 double convexe'],'3043':['3043','Faîtière 45° 2x2'],'3044':['3044c','Faîtière 45° 2x1'],
+  'ant':['3957a','Antenne 1x4'],'plant':['2417','Feuillage 6x5'],'b22r':['3941','Brique ronde 2x2'],'tr2':['14769','Tuile ronde 2x2'],
+  'bp':['3811','Plaque de base 32x32'],'t24':['87079','Tuile 2x4'],'bar4':['30374','Barre 4L'],'pr1':['4073','Plaque ronde 1x1']
+};
+const TREES=[[22,20],[28,25],[23,28]];
+const LAMPS=[[1,2],[18,2],[20,2],[30,2]];
+const EXTRA={
+  base:[['bp','V',1]],
+  deco:[['ant','W',2],['b22r','Y',1],['tr2','D',1],['plant','V',2]],
+  socle:[['t24','S',8],['r','K',4],['bar4','K',4],['pr1','Z',4],['plant','V',3]]
+};
+function tally(groups){const m={};const inc=(k,q)=>{m[k]=(m[k]||0)+q;};groups.forEach(g=>{inc(g.part+'|'+g.c,1);if(g.part==='door')inc('doorp|N',1);});return m;}
+function addList(m,list){list.forEach(([p,c,q])=>{const k=p+'|'+c;m[k]=(m[k]||0)+q;});return m;}
+const sortParts=(a,b)=>{const[pa,ca]=a[0].split('|'),[pb,cb]=b[0].split('|');return COLORDER.indexOf(ca)-COLORDER.indexOf(cb)||CAT[pa][0].localeCompare(CAT[pb][0]);};
+const isRound=p=>p==='r'||p==='c1'||p==='c3'||p==='b22r'||p==='tr2'||p==='pr1';
+
+const STEPS=[{k:'base'}];for(let l=1;l<=NL;l++)STEPS.push({k:'lvl',l});STEPS.push({k:'deco'},{k:'socle'});
+const LAST=STEPS.length-1;
+
+// ================= Textes
+const TITLE=l=>l===1?'Fondations et portail':l<=5?'Murs et vitraux':l<=7?'Toitures basses':l<=10?'Arcs-boutants et fenêtres hautes':l<=12?'Grandes toitures en ardoise':l<=16?'Beffrois des tours':l===17?'Corniche des tours':l===18?'Plateforme des flèches':l<=21?'Pinacles et base des flèches':l<=23?'Cônes des flèches':'Pointe des flèches';
+function levelNotes(l){
+  const t=[];
+  if(l===1){
+    t.push("Posez ce premier rang directement sur la plaque, sur les emplacements repérés à l'étape 0.");
+    t.push("Portail : le cadre de porte 1x4x6 se pose dès maintenant au centre de la façade, porte brune fermée. Il occupe six niveaux.");
+    t.push("Tours : deux carrés de 5x5, angles en beige foncé, ce sont les contreforts.");
+    t.push("Contreforts des bas-côtés : quatre piles beige foncé, colonnes 3 et 18.");
+  }
+  if(l===2)t.push("Vitraux : briques 1x1 transparentes, bleu foncé et rouge en damier. Elles s'allument en mode nuit.");
+  if(l>=2&&l<=4)t.push("Bas-côtés : trois paires de vitraux de chaque côté, entre les contreforts.");
+  if(l===2)t.push("Déambulatoire : sept vitraux, un par chapelle rayonnante, deux sur chaque flanc et trois au chevet.");
+  if(l===3)t.push("Transept : les grandes verrières des deux pignons commencent. Elles montent sur sept niveaux.");
+  if([3,4,7,8].includes(l))t.push("Tours : une baie noir transparent au centre de la face avant.");
+  if(l===5||l===6)t.push("Tours : une baie sur la face extérieure.");
+  if(l<=2)t.push("Cloître : mur extérieur beige avec une entrée de deux tenons côté parvis, colonnettes rondes une sur deux côté jardin.");
+  if(l===3)t.push("Cloître : linteau continu, les briques font pont d'une colonnette à l'autre.");
+  if(l===4)t.push("Cloître : toiture en ardoise, un anneau de pentes 2x2 et une pente double convexe à chaque angle.");
+  if(l===5)t.push("Bas-côtés et déambulatoire : dernier rang de murs.");
+  if(l===6){t.push("Toitures basses : première rangée de pentes en ardoise sur les bas-côtés et le déambulatoire. Au chevet, une pente double convexe à chaque angle.");t.push("Derrière les pentes, un rang de briques gris foncé porte la rangée suivante.");}
+  if(l===7){t.push("Toitures basses : deuxième rangée, adossée aux murs de la nef et du chœur.");t.push("Portail : l'arche 1x6x2 beige foncé coiffe le cadre de porte. Elle occupe deux niveaux.");t.push("Contreforts : une brique ronde au sommet de chaque pile.");}
+  if(l===8){t.push("Arcs-boutants : quatre pentes incurvées 4x1. Le côté haut se clipse sur le tenon de la toiture basse, contre la nef. Le côté bas vient au-dessus de la pile.");t.push("Contreforts : un cône 1x1 en pinacle.");t.push("Fenêtres hautes : vitraux dans la nef, le chœur et les bras du transept.");}
+  if(l===9)t.push("Façade : la grande verrière au-dessus du portail, deux vitraux côte à côte.");
+  if(l===10)t.push("Corniche : tout le rang supérieur des grands murs passe en beige foncé. Même chose pour la ceinture des tours.");
+  if(l===11){t.push("Grands toits : pentes 2x2 en ardoise sur la nef, le chœur et les deux bras du transept. Le chevet se ferme par deux pentes doubles convexes.");t.push("Pignon de façade : un rang plein devant le toit.");}
+  if(l===12){t.push("Faîtage : faîtières 2x2 sur la nef, qui traversent le transept, et sur chaque bras du transept.");t.push("Pignon : il se resserre d'un tenon de chaque côté.");}
+  if(l===13){t.push("Pignon : sommet en beige foncé.");t.push("Tours : les beffrois s'ouvrent. Une baie noir transparent au centre de chaque face.");}
+  if(l===14||l===15)t.push("Tours : beffrois, baie élargie à trois tenons en façade.");
+  if(l===16)t.push("Tours : dernier rang des beffrois.");
+  if(l===17)t.push("Tours : corniche, tout le rang en beige foncé.");
+  if(l===18)t.push("Flèches : plateforme pleine en blanc. Les flèches datent du XIXe siècle, d'où la pierre plus claire.");
+  if(l===19)t.push("Flèches : une brique ronde blanche à chaque angle, ce sont les pinacles. Le reste de la plateforme est plein.");
+  if(l===20)t.push("Flèches : la base devient octogonale, une croix de cinq tenons au centre.");
+  if(l===21)t.push("Flèches : deuxième rang octogonal, les pinacles continuent.");
+  if(l===22)t.push("Flèches : un cône 3x3x2 blanc sur chaque croix. Il occupe deux niveaux. Les pinacles gagnent une dernière brique ronde.");
+  if(l===23)t.push("Pinacles : un cône 1x1 sur chaque angle. Le grand cône occupe déjà le centre.");
+  if(l===24)t.push("Flèches : une brique ronde 1x1 au sommet du cône. Une barre 4L glissée dans le trou du cône aide à la centrer.");
+  if(l===25)t.push("Flèches : une deuxième brique ronde.");
+  if(l===26)t.push("Flèches : cône 1x1 final. La croix se pose à l'étape suivante.");
+  return t;
+}
+
+// ================= Plans 2D
+const PXMIN=0,PXMAX=31,PYMIN=0,PYMAX=31;
+function outwardInner(g){if(!g.out||(g.out[0]===0&&g.out[1]===0))return[];const s=new Set(g.cells.map(p=>p+''));return g.cells.filter(p=>s.has([p[0]+g.out[0],p[1]+g.out[1]]+''));}
+function planSVG(l){
+  const S=14,m=6,top=18,bot=22,NX=PXMAX-PXMIN+1,NY=PYMAX-PYMIN+1,W=NX*S+2*m,H=NY*S+top+bot;
+  const L=LV[l-1],P=l>1?LV[l-2]:null;
+  const px=x=>m+(x-PXMIN)*S,py=y=>top+(PYMAX-y)*S;
+  let s=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Plan du niveau ${l}">`;
+  for(let x=PXMIN;x<=PXMAX;x++)for(let y=PYMIN;y<=PYMAX;y++)s+=`<rect x="${px(x)+.5}" y="${py(y)+.5}" width="${S-1}" height="${S-1}" fill="var(--grid)"/>`;
+  [1,5,10,15,20,25,30].forEach(n=>{s+=`<text x="${px(n-1)+S/2}" y="12" font-size="10" text-anchor="middle" fill="var(--muted)" font-family="DM Sans,sans-serif">${n}</text>`;});
+  if(P)P.cells.forEach(c=>{s+=`<rect x="${px(c.x)+1}" y="${py(c.y)+1}" width="${S-2}" height="${S-2}" fill="#A0A5A9" opacity=".5" rx="1"/>`;});
+  L.cells.forEach(c=>{if(c.t==='occ')s+=`<rect x="${px(c.x)+1.5}" y="${py(c.y)+1.5}" width="${S-3}" height="${S-3}" fill="none" stroke="#888" stroke-dasharray="3 2" rx="1"/>`;});
+  L.groups.forEach(g=>{
+    const xs=g.cells.map(p=>p[0]),ys=g.cells.map(p=>p[1]);
+    const xa=Math.min(...xs),xb=Math.max(...xs),ya=Math.min(...ys),yb=Math.max(...ys);
+    const fill=COL[g.c].hex,X=px(xa)+1,Y=py(yb)+1,Wd=(xb-xa+1)*S-2,Hd=(yb-ya+1)*S-2,cx=X+Wd/2,cy=Y+Hd/2;
+    const round=g.kind==='round'||g.kind==='cone1'||g.kind==='cone3';
+    if(round){s+=`<circle cx="${cx}" cy="${cy}" r="${Wd/2}" fill="${fill}" stroke="var(--stroke)"/>`;}
+    else s+=`<rect x="${X}" y="${Y}" width="${Wd}" height="${Hd}" rx="2" fill="${fill}" stroke="var(--stroke)"/>`;
+    let studs=g.cells;
+    if(g.kind==='slope')studs=outwardInner(g);
+    if(g.kind==='corner'||g.kind==='ridge'||g.kind==='cone1'||g.kind==='cone3')studs=[];
+    if(g.kind==='fly')studs=[g.cells.reduce((a,p)=>(p[0]*-g.out[0]>a[0]*-g.out[0]?p:a))];
+    if(g.kind==='cone1'||g.kind==='cone3')s+=`<circle cx="${cx}" cy="${cy}" r="${g.kind==='cone3'?S*.55:S*.18}" fill="${fill}" stroke="rgba(0,0,0,.35)"/>`;
+    if(g.kind==='door')s+=`<rect x="${X+3}" y="${Y+Hd-5}" width="${Wd-6}" height="3" fill="${COL.N.hex}"/>`;
+    if(g.kind==='arch')s+=`<path d="M${X+S+2} ${Y+Hd}q${(Wd-2*S-4)/2} -${Hd*1.4} ${Wd-2*S-4} 0" fill="none" stroke="#5a4f3c" stroke-width="1.4"/>`;
+    if(g.t==='win')s+=`<path d="M${X+2} ${Y+Hd-2}L${X+Wd-2} ${Y+2}" stroke="rgba(255,255,255,.55)" stroke-width="1.2"/>`;
+    studs.forEach(p=>{s+=`<circle cx="${px(p[0])+S/2}" cy="${py(p[1])+S/2}" r="${S*.26}" fill="${fill}" stroke="rgba(0,0,0,.3)" stroke-width=".8"/>`;});
+    if(g.kind==='slope'||g.kind==='corner'||g.kind==='fly'){
+      const ox=g.out[0],oy=-g.out[1],ax=cx+ox*(Wd/2-4),ay=cy+oy*(Hd/2-4),bx=cx-ox*3,by=cy-oy*3;
+      s+=`<line x1="${bx}" y1="${by}" x2="${ax}" y2="${ay}" stroke="#F5C235" stroke-width="2.4" stroke-linecap="round"/><circle cx="${ax}" cy="${ay}" r="2.6" fill="#F5C235"/>`;
+    }
+    if(g.kind==='ridge'){if(g.axis==='y')s+=`<line x1="${cx}" y1="${Y+2}" x2="${cx}" y2="${Y+Hd-2}" stroke="#F5C235" stroke-width="2"/>`;else s+=`<line x1="${X+2}" y1="${cy}" x2="${X+Wd-2}" y2="${cy}" stroke="#F5C235" stroke-width="2"/>`;}
+  });
+  s+=`<text x="${W/2}" y="${H-5}" font-size="11" text-anchor="middle" fill="var(--muted)" font-family="DM Sans,sans-serif">▼ façade ouest et parvis, bord avant de la plaque</text></svg>`;
+  return s;
+}
+function baseSVG(full){
+  const S=10,W=32*S,H=32*S,X=x=>x*S,R=r=>(31-r)*S;
+  let s=`<svg viewBox="0 0 ${W} ${H+16}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Plaque de base">`;
+  s+=`<rect width="${W}" height="${H}" fill="#237841" rx="3"/>`;
+  for(let x=0;x<32;x++)for(let r=0;r<32;r++)s+=`<circle cx="${X(x)+S/2}" cy="${R(r)+S/2}" r="3" fill="#2E8B4E"/>`;
+  LV[0].cells.forEach(c=>{s+=`<rect x="${X(c.x)+.5}" y="${R(c.y)+.5}" width="${S-1}" height="${S-1}" fill="${full?COL[c.c].hex:'#F5C235'}"/>`;});
+  if(full){
+    for(let x=0;x<32;x+=4)s+=`<rect x="${X(x)+.5}" y="${R(1)+.5}" width="${4*S-1}" height="${2*S-1}" fill="${COL.S.hex}" stroke="#b9a57c" rx="1"/>`;
+    LAMPS.forEach(([x,r])=>{s+=`<circle cx="${X(x)+S/2}" cy="${R(r)+S/2}" r="${S*.45}" fill="#1B1B1B"/><circle cx="${X(x)+S/2}" cy="${R(r)+S/2}" r="${S*.22}" fill="#F5CD2F"/>`;});
+    TREES.forEach(([x,r])=>{s+=`<circle cx="${X(x)+S/2}" cy="${R(r)+S/2}" r="${S*2.2}" fill="#2f9a53" stroke="#1b5e33"/>`;});
+    s+=`<circle cx="${X(24.5)+S/2}" cy="${R(10)+S/2}" r="${S}" fill="${COL.Y.hex}" stroke="#555"/>`;
+  }
+  s+=`<text x="${W/2}" y="${H+13}" font-size="11" text-anchor="middle" fill="var(--muted)" font-family="DM Sans,sans-serif">▼ bord avant de la plaque, côté parvis</text></svg>`;
+  return s;
+}
+function chips(m){
+  return Object.entries(m).sort(sortParts).map(([k,q])=>{const[p,c]=k.split('|');return `<span class="chip"><i class="sw${isRound(p)?' round':''}" style="background:${COL[c].hex}"></i><b>${q}×</b> ${CAT[p][1]}</span>`;}).join('');
+}
+
+// ================= 3D
+const BH=1.2,LIP=.4;
+let three=null;
+function init3D(){
+  if(typeof THREE==='undefined')throw new Error('three');
+  const canvas=document.getElementById('c'),stage=document.getElementById('stage');
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+  renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.NoToneMapping;
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(34,1,.5,600);
+  const hemi=new THREE.HemisphereLight(0xeef5ff,0x6b6552,.62);scene.add(hemi);
+  const sun=new THREE.DirectionalLight(0xfff1dc,1.05);sun.position.set(-28,52,34);sun.castShadow=true;
+  sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-36,right:36,top:40,bottom:-36,near:1,far:150});sun.shadow.bias=-.0006;sun.shadow.normalBias=.02;
+  scene.add(sun);
+  const lin=h=>new THREE.Color(h).convertSRGBToLinear();
+  const GL={Q:['#1F3FA8','#5b86ff'],R:['#C91A09','#ff6a3d'],T:['#20252f','#ffb24a'],Z:['#F5CD2F','#ffe27a']};
+  const MAT={};const glowMats=[];
+  function mat(c){
+    if(MAT[c])return MAT[c];
+    let m;
+    if(GL[c]){m=new THREE.MeshStandardMaterial({color:lin(GL[c][0]),roughness:.08,transparent:true,opacity:c==='T'?.82:.72,emissive:lin(GL[c][1]),emissiveIntensity:0});glowMats.push(m);}
+    else m=new THREE.MeshStandardMaterial({color:lin(COL[c].hex),roughness:c==='D'?.5:.36,metalness:0});
+    return MAT[c]=m;
+  }
+  // géométries
+  const nonIdx=g=>g.index?g.toNonIndexed():g;
+  function merge(list){
+    list=list.map(nonIdx);let n=0;list.forEach(g=>n+=g.attributes.position.count);
+    const pos=new Float32Array(n*3),nor=new Float32Array(n*3);let o=0;
+    list.forEach(g=>{pos.set(g.attributes.position.array,o*3);nor.set(g.attributes.normal.array,o*3);o+=g.attributes.position.count;});
+    const m=new THREE.BufferGeometry();m.setAttribute('position',new THREE.BufferAttribute(pos,3));m.setAttribute('normal',new THREE.BufferAttribute(nor,3));return m;
+  }
+  const box=(w,h,d,x,y,z)=>{const g=new THREE.BoxGeometry(w,h,d);g.translate(x,y,z);return g;};
+  const stud=(x,y,z)=>{const g=new THREE.CylinderGeometry(.3,.3,.18,16);g.translate(x,y+.09,z);return g;};
+  function poly(faces){
+    const all=[].concat(...faces),c=[0,1,2].map(i=>all.reduce((a,p)=>a+p[i],0)/all.length),pos=[];
+    faces.forEach(f=>{
+      let pts=f.slice();const[a,b,d]=pts;
+      const u=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],v=[d[0]-a[0],d[1]-a[1],d[2]-a[2]];
+      const n=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]];
+      const fc=[0,1,2].map(i=>pts.reduce((a,p)=>a+p[i],0)/pts.length);
+      if(n[0]*(fc[0]-c[0])+n[1]*(fc[1]-c[1])+n[2]*(fc[2]-c[2])<0)pts.reverse();
+      for(let i=1;i<pts.length-1;i++)pos.push(...pts[0],...pts[i],...pts[i+1]);
+    });
+    const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.computeVertexNormals();return g;
+  }
+  const GEO={};
+  function slopeGeo(W){const k='s'+W;if(GEO[k])return GEO[k];const w=W/2-.02,H=BH-.01,L=LIP;
+    const A=[-w,0,.98],B=[w,0,.98],C=[-w,L,.98],D=[w,L,.98],E=[-w,H,0],F=[w,H,0],G=[-w,H,-.98],Hh=[w,H,-.98],I=[-w,0,-.98],J=[w,0,-.98];
+    const parts=[poly([[A,B,J,I],[A,B,D,C],[C,D,F,E],[E,F,Hh,G],[I,J,Hh,G],[A,C,E,G,I],[B,D,F,Hh,J]])];
+    for(let i=0;i<W;i++)parts.push(stud(-W/2+.5+i,H,-.5));return GEO[k]=merge(parts);}
+  function ridgeGeo(W){const k='r'+W;if(GEO[k])return GEO[k];const w=W/2-.02,H=BH-.01,L=LIP;
+    const A=[-w,0,.98],B=[w,0,.98],C=[-w,L,.98],D=[w,L,.98],E=[-w,H,0],F=[w,H,0],G=[-w,L,-.98],Hh=[w,L,-.98],I=[-w,0,-.98],J=[w,0,-.98];
+    return GEO[k]=poly([[A,B,J,I],[A,B,D,C],[C,D,F,E],[G,Hh,F,E],[I,J,Hh,G],[A,C,E,G,I],[B,D,F,Hh,J]]);}
+  function cornerGeo(){if(GEO.c)return GEO.c;const H=BH-.01,L=LIP,q=.98;
+    const b1=[-q,0,-q],b2=[q,0,-q],b3=[q,0,q],b4=[-q,0,q],l2=[q,L,-q],l3=[q,L,q],l4=[-q,L,q],t1=[-q,H,-q],t2=[0,H,-q],t3=[0,H,0],t4=[-q,H,0];
+    return GEO.c=poly([[b1,b2,b3,b4],[b1,b2,l2,t2,t1],[b1,t1,t4,l4,b4],[b2,b3,l3,l2],[b4,b3,l3,l4],[l2,l3,t3,t2],[l4,l3,t3,t4],[t1,t2,t3,t4]]);}
+  function brickGeo(w,d,h,studs){const k='b'+w+'x'+d+'x'+h+':'+studs.join(';');if(GEO[k])return GEO[k];
+    return GEO[k]=merge([box(w-.04,h*BH-.02,d-.04,0,h*BH/2,0)].concat(studs.map(s=>stud(s[0],h*BH,s[1]))));}
+  function roundGeo(){if(GEO.rd)return GEO.rd;const g=new THREE.CylinderGeometry(.47,.47,BH-.02,24);g.translate(0,BH/2,0);return GEO.rd=merge([g,stud(0,BH,0)]);}
+  function cone1Geo(){if(GEO.c1)return GEO.c1;const g=new THREE.CylinderGeometry(.16,.47,BH-.02,24);g.translate(0,BH/2,0);return GEO.c1=g;}
+  function cone3Geo(){if(GEO.c3)return GEO.c3;const g=new THREE.CylinderGeometry(.62,1.47,2*BH-.02,32);g.translate(0,BH,0);return GEO.c3=g;}
+  function archGeo(){if(GEO.ar)return GEO.ar;const s=new THREE.Shape(),H=2*BH-.02,hw=2.98;
+    s.moveTo(-hw,0);s.lineTo(-2,0);s.lineTo(-2,1);s.quadraticCurveTo(-1.9,1.9,0,2.05);s.quadraticCurveTo(1.9,1.9,2,1);s.lineTo(2,0);s.lineTo(hw,0);s.lineTo(hw,H);s.lineTo(-hw,H);s.lineTo(-hw,0);
+    const g=new THREE.ExtrudeGeometry(s,{depth:.96,bevelEnabled:false,curveSegments:10});g.translate(0,0,-.48);
+    const parts=[g];for(let i=0;i<6;i++)parts.push(stud(-2.5+i,H,0));return GEO.ar=merge(parts);}
+  function flyGeo(){if(GEO.fl)return GEO.fl;const s=new THREE.Shape(),H=BH-.02;
+    s.moveTo(-1.98,0);s.lineTo(1.98,0);s.lineTo(1.98,H);s.lineTo(1,H);s.quadraticCurveTo(-.9,H,-1.98,.3);s.lineTo(-1.98,0);
+    const g=new THREE.ExtrudeGeometry(s,{depth:.94,bevelEnabled:false,curveSegments:12});g.translate(0,0,-.47);
+    return GEO.fl=merge([g,stud(1.5,H,0)]);}
+  const RAD=(ox,oy,cx,cz)=>Math.atan2(ox,-oy)-Math.atan2(cx,cz);
+  const wx=x=>x-15.5,wz=y=>15.5-y;
+
+  const levelMeshes=[];const deco=[],socle=[],markers=[];
+  function place(mesh,x,y,level){mesh.position.set(x,(level-1)*BH,y);mesh.userData.baseY=(level-1)*BH;mesh.castShadow=true;mesh.receiveShadow=true;scene.add(mesh);return mesh;}
+  LV.forEach(L=>{
+    const arr=[];
+    L.groups.forEach(g=>{
+      const xs=g.cells.map(p=>p[0]),ys=g.cells.map(p=>p[1]);
+      const xa=Math.min(...xs),xb=Math.max(...xs),ya=Math.min(...ys),yb=Math.max(...ys);
+      const cx=(wx(xa)+wx(xb))/2,cz=(wz(ya)+wz(yb))/2,W=xb-xa+1,D=yb-ya+1;
+      let mesh;
+      if(g.kind==='round')mesh=new THREE.Mesh(roundGeo(),mat(g.c));
+      else if(g.kind==='cone1')mesh=new THREE.Mesh(cone1Geo(),mat(g.c));
+      else if(g.kind==='cone3')mesh=new THREE.Mesh(cone3Geo(),mat(g.c));
+      else if(g.kind==='slope'){const n=g.cells.length/2;mesh=new THREE.Mesh(slopeGeo(n),mat(g.c));mesh.rotation.y=RAD(g.out[0],g.out[1],0,1);}
+      else if(g.kind==='corner'){mesh=new THREE.Mesh(cornerGeo(),mat(g.c));mesh.rotation.y=RAD(g.out[0],g.out[1],1,1);}
+      else if(g.kind==='ridge'){mesh=new THREE.Mesh(ridgeGeo(g.cells.length/2),mat(g.c));if(g.axis==='y')mesh.rotation.y=Math.PI/2;}
+      else if(g.kind==='arch'){mesh=new THREE.Mesh(archGeo(),mat(g.c));if(D>W)mesh.rotation.y=Math.PI/2;}
+      else if(g.kind==='fly'){mesh=new THREE.Mesh(flyGeo(),mat(g.c));mesh.rotation.y=Math.atan2(-g.out[1],-g.out[0]);}
+      else if(g.kind==='door'){
+        const studs=g.cells.map(p=>[wx(p[0])-cx,wz(p[1])-cz]);
+        mesh=new THREE.Mesh(brickGeo(W,D,g.h,studs),mat(g.c));
+        const oz=-g.out[1],ph=g.h*BH-.7;
+        const panel=new THREE.Mesh(new THREE.BoxGeometry(W-.9,ph,.08),mat('N'));panel.position.set(0,ph/2,oz*.5);mesh.add(panel);
+        const split=new THREE.Mesh(new THREE.BoxGeometry(.08,ph,.1),mat('K'));split.position.set(0,ph/2,oz*.52);mesh.add(split);
+      }else{
+        const studs=g.cells.map(p=>[wx(p[0])-cx,wz(p[1])-cz]);
+        mesh=new THREE.Mesh(brickGeo(W,D,1,studs),mat(g.c));
+      }
+      arr.push(place(mesh,cx,cz,L.l));
+    });
+    levelMeshes.push(arr);
+  });
+  // plaque et sol
+  const ground=new THREE.Mesh(new THREE.CircleGeometry(160,48),new THREE.MeshStandardMaterial({color:lin('#c9d4dc'),roughness:1}));
+  ground.rotation.x=-Math.PI/2;ground.position.y=-.34;ground.receiveShadow=true;scene.add(ground);
+  const plate=new THREE.Mesh(new THREE.BoxGeometry(32,.32,32),mat('V'));plate.position.y=-.16;plate.receiveShadow=true;scene.add(plate);
+  const studsI=new THREE.InstancedMesh(new THREE.CylinderGeometry(.3,.3,.18,12),mat('V'),1024);
+  const M4=new THREE.Matrix4();let si=0;for(let x=0;x<32;x++)for(let z=0;z<32;z++){M4.makeTranslation(x-15.5,.09,z-15.5);studsI.setMatrixAt(si++,M4);}
+  studsI.receiveShadow=true;scene.add(studsI);
+  // repères étape 0
+  const mk=new THREE.MeshBasicMaterial({color:0xF5C235,transparent:true,opacity:.85});
+  LV[0].cells.forEach(c=>{const m=new THREE.Mesh(new THREE.BoxGeometry(.9,.06,.9),mk);m.position.set(wx(c.x),.21,wz(c.y));scene.add(m);markers.push(m);});
+  // décors
+  const addD=(m,arr)=>{m.castShadow=true;m.receiveShadow=true;m.userData.baseY=m.position.y;scene.add(m);arr.push(m);return m;};
+  const cross=(x,z,y)=>{const m=new THREE.Mesh(merge([box(.6,.3,.6,0,.15,0),(()=>{const g=new THREE.CylinderGeometry(.06,.09,4.2,8);g.translate(0,2.4,0);return g;})(),box(1.3,.12,.12,0,3.7,0)]),mat('W'));m.position.set(x,y,z);return m;};
+  TOWERS.forEach(T=>addD(cross(wx(T.cx),wz(TCY),NL*BH),deco));
+  const well=new THREE.Mesh(merge([(()=>{const g=new THREE.CylinderGeometry(.97,.97,BH-.02,28);g.translate(0,BH/2,0);return g;})()]),mat('Y'));well.position.set(wx(24.5),0,wz(10.5));addD(well,deco);
+  const wellTop=new THREE.Mesh(new THREE.CylinderGeometry(.97,.97,.14,28),mat('D'));wellTop.position.set(wx(24.5),BH+.07,wz(10.5));addD(wellTop,deco);
+  const leaf=new THREE.MeshStandardMaterial({color:lin('#2f8f4c'),roughness:.55,flatShading:true});
+  const bush=(x,y,sc,i,arr)=>{const g=new THREE.Group();[[0,0,0,1.5],[1,.3,.6,1.1],[-.9,.2,-.5,1.2],[.2,.9,-.3,1]].forEach(([a,b,c,s])=>{const m=new THREE.Mesh(new THREE.IcosahedronGeometry(s*sc,0),leaf);m.position.set(a*sc,(b+s*.8)*sc,c*sc);m.rotation.set(i,i*2,0);m.castShadow=true;g.add(m);});g.position.set(wx(x),0,wz(y));g.userData.baseY=0;scene.add(g);arr.push(g);};
+  bush(22,8,.7,1,deco);bush(27,12.5,.7,2,deco);
+  TREES.forEach(([x,y],i)=>bush(x,y,1,i+3,socle));
+  // parvis et lampadaires
+  for(let x=0;x<32;x+=4)addD(new THREE.Mesh(new THREE.BoxGeometry(3.96,.4,1.96),mat('S')),socle).position.set(wx(x+1.5),.2,wz(.5));
+  const lampLights=[];
+  LAMPS.forEach(([x,y])=>{
+    const m=new THREE.Mesh(merge([(()=>{const g=new THREE.CylinderGeometry(.47,.47,BH-.02,20);g.translate(0,BH/2,0);return g;})(),(()=>{const g=new THREE.CylinderGeometry(.1,.1,3.2,8);g.translate(0,BH+1.6,0);return g;})()]),mat('K'));
+    m.position.set(wx(x),0,wz(y));addD(m,socle);
+    const glb=new THREE.Mesh(new THREE.CylinderGeometry(.45,.45,.35,20),mat('Z'));glb.position.set(wx(x),BH+3.35,wz(y));addD(glb,socle);
+    const pl=new THREE.PointLight(0xffd58a,0,14,1.8);pl.position.set(wx(x),BH+3.9,wz(y));scene.add(pl);lampLights.push(pl);
+  });
+  socle.forEach(m=>m.userData.baseY=m.position.y);
+  // nuit
+  const spots=[[-26,2,40],[22,2,40]].map(p=>{const s=new THREE.SpotLight(0xffd9a0,0,0,.42,.6);s.position.set(...p);s.target.position.set(-6,14,6);scene.add(s);scene.add(s.target);return s;});
+  const sv=[];for(let i=0;i<700;i++){const u=Math.random()*2-1,a=Math.random()*Math.PI*2,r=220,y=Math.abs(u);sv.push(r*Math.sqrt(1-u*u)*Math.cos(a),r*y+10,r*Math.sqrt(1-u*u)*Math.sin(a));}
+  const sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.Float32BufferAttribute(sv,3));
+  const stars=new THREE.Points(sg,new THREE.PointsMaterial({color:0xffffff,size:1.1,sizeAttenuation:false}));stars.visible=false;scene.add(stars);
+  const moon=new THREE.Mesh(new THREE.SphereGeometry(7,32,16),new THREE.MeshBasicMaterial({color:0xfff6dc}));moon.position.set(110,120,-160);moon.visible=false;scene.add(moon);
+  scene.fog=new THREE.Fog(0xBFD9EE,150,420);
+
+  let night=false;
+  function setNight(on){
+    night=on;stage.classList.toggle('night',on);
+    const bgc=on?0x0B1828:0xBFD9EE;renderer.setClearColor(bgc);scene.fog.color.set(bgc);
+    hemi.intensity=on?.14:.62;hemi.color.set(on?0x8aa4d6:0xe8f2ff);
+    sun.intensity=on?.22:1.05;sun.color.set(on?0x9fb8ff:0xfff1dc);
+    glowMats.forEach(m=>m.emissiveIntensity=on?1.4:0);
+    spots.forEach(s=>s.intensity=on?1.1:0);
+    ground.material.color.copy(lin(on?'#1c2636':'#c9d4dc'));
+    stars.visible=moon.visible=on;updateLamps();
+  }
+  function updateLamps(){const on=night&&curStep>=28;lampLights.forEach(p=>p.intensity=on?1.6:0);}
+
+  // caméra
+  let th=.55,ph=1.2,rad=88,autoSpin=true,lastUser=0;const tgt=new THREE.Vector3(0,14,1);let tgtY=14;
+  function updCam(){camera.position.set(tgt.x+rad*Math.sin(ph)*Math.sin(th),tgt.y+rad*Math.cos(ph),tgt.z+rad*Math.sin(ph)*Math.cos(th));camera.lookAt(tgt);}
+  const ptrs=new Map();let pinch0=0,rad0=rad;
+  canvas.addEventListener('pointerdown',e=>{canvas.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,[e.clientX,e.clientY]);lastUser=performance.now();if(ptrs.size===2){const[a,b]=[...ptrs.values()];pinch0=Math.hypot(a[0]-b[0],a[1]-b[1]);rad0=rad;}});
+  canvas.addEventListener('pointermove',e=>{if(!ptrs.has(e.pointerId))return;const p=ptrs.get(e.pointerId);lastUser=performance.now();
+    if(ptrs.size===1){th-=(e.clientX-p[0])*.008;ph=Math.min(1.5,Math.max(.25,ph-(e.clientY-p[1])*.006));}
+    ptrs.set(e.pointerId,[e.clientX,e.clientY]);
+    if(ptrs.size===2){const[a,b]=[...ptrs.values()];const d=Math.hypot(a[0]-b[0],a[1]-b[1]);if(pinch0)rad=Math.min(140,Math.max(22,rad0*pinch0/d));}});
+  const up=e=>{ptrs.delete(e.pointerId);if(ptrs.size<2)pinch0=0;};
+  canvas.addEventListener('pointerup',up);canvas.addEventListener('pointercancel',up);
+  canvas.addEventListener('wheel',e=>{e.preventDefault();rad=Math.min(140,Math.max(22,rad*(1+e.deltaY*.001)));lastUser=performance.now();},{passive:false});
+
+  function resize(){const w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.fov=w<600?46:34;camera.updateProjectionMatrix();}
+  window.addEventListener('resize',resize);resize();
+
+  // animation
+  const anims=[];const ease=t=>1-Math.pow(1-t,3);
+  function drop(list){const t0=performance.now();list.forEach((m,i)=>{m.position.y=m.userData.baseY+6;anims.push({m,t0:t0+i*12,dur:420});});}
+  let curStep=LAST;
+  function show(step,prev){
+    curStep=step;
+    const lvl=STEPS[step].k==='lvl'?STEPS[step].l:(step===0?0:NL);
+    levelMeshes.forEach((arr,i)=>arr.forEach(m=>{m.visible=i+1<=lvl;}));
+    deco.forEach(m=>m.visible=step>=27);socle.forEach(m=>m.visible=step>=28);markers.forEach(m=>m.visible=step===0);
+    anims.length=0;levelMeshes.forEach(a=>a.forEach(m=>m.position.y=m.userData.baseY));deco.concat(socle).forEach(m=>m.position.y=m.userData.baseY);
+    if(prev===step-1){
+      if(STEPS[step].k==='lvl')drop(levelMeshes[step-1]);else if(step===27)drop(deco);else if(step===28)drop(socle);
+    }
+    tgtY=step===0?4:lvl>=NL?15:Math.max(6,Math.min(16,lvl*BH*.55+4));
+    updateLamps();
+  }
+  function loop(now){
+    for(let i=anims.length-1;i>=0;i--){const a=anims[i];const t=Math.min(1,Math.max(0,(now-a.t0)/a.dur));a.m.position.y=a.m.userData.baseY+6*(1-ease(t));if(t>=1)anims.splice(i,1);}
+    if(autoSpin&&now-lastUser>3500&&!ptrs.size)th+=.0018;
+    tgt.y+=(tgtY-tgt.y)*.06;updCam();
+    renderer.render(scene,camera);requestAnimationFrame(loop);
+  }
+  setNight(false);
+  requestAnimationFrame(loop);
+  return{show,setNight,setSpin:v=>{autoSpin=v;}};
+}
+
+// ================= Interface
+let step=LAST;
+function render(prev){
+  const st=STEPS[step];
+  document.getElementById('num').textContent=step;
+  document.getElementById('range').value=step;
+  document.getElementById('prev').disabled=step===0;
+  document.getElementById('next').disabled=step===LAST;
+  document.getElementById('lbl').textContent=`Étape ${step} sur ${LAST}`;
+  let title,notes,plan,planTitle,parts;
+  if(st.k==='base'){
+    title='Repérer les emplacements<small>Plaque de base</small>';
+    notes=["Posez la plaque verte 32x32 devant vous, bord avant vers vous. La façade ouest regarde vers vous, le chevet part vers le fond, à l'est.","La cathédrale occupe les colonnes 2 à 19, du 4e au 31e rang. Les deux tours sont au premier plan.","Le cloître se place à droite de la nef, côté sud, colonnes 20 à 31.","Les deux premiers rangs restent libres pour le parvis. Parvis, lampadaires et arbres viennent à la fin."];
+    plan=baseSVG(false);planTitle='Emprises en jaune';parts=addList({},EXTRA.base);
+  }else if(st.k==='lvl'){
+    const L=LV[st.l-1];
+    title=`Niveau ${st.l}<small>${TITLE(st.l)}, ${L.groups.length} pièces</small>`;
+    notes=levelNotes(st.l);plan=planSVG(st.l);planTitle=`Vue de dessus du niveau ${st.l}`;parts=tally(L.groups);
+  }else if(st.k==='deco'){
+    title='Croix et jardin du cloître<small>Finitions</small>';
+    notes=["Une antenne 1x4 blanche au sommet de chaque flèche, c'est la croix.","Au centre du jardin du cloître, un puits : brique ronde 2x2 beige foncé et tuile ronde 2x2 gris foncé.","Deux feuillages dans le jardin, de part et d'autre du puits."];
+    plan=baseSVG(true);planTitle='Emplacement du puits et des feuillages';parts=addList({},EXTRA.deco);
+  }else{
+    title='Parvis, lampadaires et arbres<small>Aménagements</small>';
+    notes=["Huit tuiles 2x4 beiges sur les deux premiers rangs, d'un bord à l'autre : c'est le parvis.","Quatre lampadaires sur le 3e rang : brique ronde noire, barre 4L, plaque ronde jaune transparent. De nuit, ils s'allument.","Trois grands feuillages sur la pelouse derrière le cloître."];
+    plan=baseSVG(true);planTitle='Plaque terminée';parts=addList({},EXTRA.socle);
+  }
+  document.getElementById('title').innerHTML=title;
+  document.getElementById('notes').innerHTML=notes.map(n=>`<li>${n}</li>`).join('');
+  document.getElementById('plan').innerHTML=plan;
+  document.getElementById('planTitle').textContent=planTitle;
+  document.getElementById('legend').style.display=st.k==='lvl'?'':'none';
+  document.getElementById('stepparts').innerHTML=chips(parts);
+  if(three)three.show(step,prev);
+}
+const ALL={};LV.forEach(L=>{const t=tally(L.groups);for(const k in t)ALL[k]=(ALL[k]||0)+t[k];});
+addList(ALL,EXTRA.base);addList(ALL,EXTRA.deco);addList(ALL,EXTRA.socle);
+const rows=Object.entries(ALL).sort(sortParts);let total=0;
+document.querySelector('#bom tbody').innerHTML=rows.map(([k,q])=>{total+=q;const[p,c]=k.split('|');return `<tr><td><span style="display:flex;gap:8px;align-items:center"><i class="sw${isRound(p)?' round':''}" style="background:${COL[c].hex}"></i>${COL[c].n}</span></td><td>${CAT[p][1]}</td><td>${CAT[p][0]}</td><td class="q">${q}</td></tr>`;}).join('')+`<tr><td colspan="3"><b>Total</b></td><td class="q">${total}</td></tr>`;
+document.getElementById('fPieces').textContent=total;
+const xml='<INVENTORY>\n'+rows.map(([k,q])=>{const[p,c]=k.split('|');return `  <ITEM><ITEMTYPE>P</ITEMTYPE><ITEMID>${CAT[p][0]}</ITEMID><COLOR>${COL[c].bl}</COLOR><MINQTY>${Math.ceil(q*1.1)}</MINQTY><CONDITION>N</CONDITION></ITEM>`;}).join('\n')+'\n</INVENTORY>';
+const ta=document.getElementById('xml');ta.value=xml;
+document.getElementById('xmlBtn').addEventListener('click',async()=>{const b=document.getElementById('xmlBtn');try{await navigator.clipboard.writeText(xml);b.textContent='Liste copiée';}catch(e){ta.hidden=false;ta.select();b.textContent='Copiez le XML ci-dessous';}});
+
+try{three=init3D();}catch(e){document.getElementById('fail').style.display='flex';}
+let timer=null;
+const go=(s)=>{const p=step;step=Math.max(0,Math.min(LAST,s));render(p);};
+const stopPlay=()=>{clearInterval(timer);timer=null;document.getElementById('play').textContent='▶';document.getElementById('play').setAttribute('aria-label','Lancer le montage');};
+document.getElementById('prev').onclick=()=>{stopPlay();go(step-1);};
+document.getElementById('next').onclick=()=>{stopPlay();go(step+1);};
+document.getElementById('range').oninput=e=>{stopPlay();go(+e.target.value);};
+document.getElementById('play').onclick=()=>{
+  if(timer){stopPlay();return;}
+  if(step===LAST)go(0);
+  const b=document.getElementById('play');b.textContent='❚❚';b.setAttribute('aria-label','Mettre en pause');
+  timer=setInterval(()=>{if(step>=LAST){stopPlay();return;}go(step+1);},1300);
+};
+document.getElementById('night').onclick=e=>{const on=e.currentTarget.getAttribute('aria-pressed')!=='true';e.currentTarget.setAttribute('aria-pressed',on);if(three)three.setNight(on);};
+document.getElementById('spin').onclick=e=>{const on=e.currentTarget.getAttribute('aria-pressed')!=='true';e.currentTarget.setAttribute('aria-pressed',on);if(three)three.setSpin(on);};
+document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;if(e.key==='ArrowRight')document.getElementById('next').click();if(e.key==='ArrowLeft')document.getElementById('prev').click();});
+render();
+</script>
+</body>
+</html>
