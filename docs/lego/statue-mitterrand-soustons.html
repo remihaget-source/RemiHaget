@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mitterrand et Baltique LEGO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F8F7F4;--fg:#0E1B3D;--muted:#586078;--card:#FFFFFF;--line:#E2E0DA;--gold:#F5C235;--navy:#0E1B3D;--red:#CA3538;--grid:#EEEDE8;--stroke:#5A5A5A;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0B1828;--fg:#F8F7F4;--muted:#9AA4B8;--card:#13233B;--line:#243652;--grid:#182A42;--stroke:#1A1A1A;}}
+:root[data-theme="dark"]{--bg:#0B1828;--fg:#F8F7F4;--muted:#9AA4B8;--card:#13233B;--line:#243652;--grid:#182A42;--stroke:#1A1A1A;}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:'DM Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;line-height:1.5;font-feature-settings:"tnum" 1}
+.stage{position:relative;height:min(80vh,760px);min-height:440px;background:#BFD9EE;overflow:hidden;transition:background .6s}
+.stage.night{background:#0B1828}
+.stage canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+.stage canvas:active{cursor:grabbing}
+.scrim-top,.scrim-bot{position:absolute;left:0;right:0;pointer-events:none}
+.scrim-top{top:0;height:150px;background:linear-gradient(rgba(14,27,61,.72),rgba(14,27,61,0))}
+.scrim-bot{bottom:0;height:130px;background:linear-gradient(rgba(14,27,61,0),rgba(14,27,61,.78))}
+.ov-title{position:absolute;top:18px;left:20px;right:170px;color:#F8F7F4;pointer-events:none}
+.ov-title h1{margin:0;font-size:clamp(1.6rem,4.6vw,2.8rem);line-height:1.02;font-weight:800;letter-spacing:-.02em}
+.ov-title p{margin:8px 0 0;font-size:.95rem;color:#D5DBE7}
+.ov-toggles{position:absolute;top:18px;right:16px;display:flex;flex-direction:column;gap:8px}
+.pill{font:inherit;font-weight:700;font-size:.9rem;border:1.5px solid rgba(248,247,244,.7);background:rgba(14,27,61,.45);color:#F8F7F4;border-radius:999px;padding:7px 14px;cursor:pointer;backdrop-filter:blur(6px)}
+.pill[aria-pressed="true"]{background:var(--gold);color:#0E1B3D;border-color:var(--gold)}
+.ov-bar{position:absolute;left:0;right:0;bottom:0;padding:14px 16px 16px;display:flex;align-items:center;gap:10px;color:#F8F7F4}
+.ov-bar button{font:inherit;font-weight:800;border:0;border-radius:10px;min-width:46px;height:44px;cursor:pointer;background:#F8F7F4;color:#0E1B3D;font-size:1.1rem}
+.ov-bar button.play{background:var(--gold)}
+.ov-bar button:disabled{opacity:.35;cursor:default}
+.ov-bar input[type=range]{flex:1;accent-color:var(--gold);min-width:60px}
+.ov-bar .lbl{font-weight:700;white-space:nowrap;font-size:.95rem;min-width:7.5em;text-align:right}
+.hint{position:absolute;right:16px;bottom:74px;color:#D5DBE7;font-size:.8rem;pointer-events:none}
+.fail{position:absolute;inset:0;display:none;align-items:center;justify-content:center;color:#0E1B3D;padding:24px;text-align:center}
+button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+main{max-width:1000px;margin:0 auto;padding:22px 16px 56px}
+.stephead{display:flex;align-items:baseline;gap:14px;margin:0 0 6px}
+.stepnum{font-size:3.4rem;font-weight:800;line-height:.9;color:var(--gold);min-width:1.3em}
+.stephead h2{margin:0;font-size:1.4rem;line-height:1.2}
+.stephead small{display:block;color:var(--muted);font-size:.92rem;font-weight:500}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+.notes{margin:4px 0 0;padding-left:1.1em}
+.notes li{margin:5px 0}
+.panel{border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--card)}
+.panel h3{margin:0 0 6px;font-size:.95rem}
+.panel svg{display:block;width:100%;height:auto}
+.panel .legend svg{width:18px;height:18px;display:inline}
+.stepparts{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:4px 12px 4px 6px;font-size:.9rem;background:var(--card)}
+.sw{width:18px;height:18px;border-radius:4px;border:1px solid rgba(0,0,0,.35);flex:none;display:inline-block}
+.sw.round{border-radius:50%}
+section{margin-top:44px}
+section h2{font-size:1.5rem;margin:0 0 6px}
+section>p{color:var(--muted);margin:0 0 14px;max-width:70ch}
+.tips{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+.tips div{border-top:3px solid var(--gold);padding-top:8px}
+.tips b{display:block;margin-bottom:2px}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.facts div{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--card)}
+.facts strong{display:block;font-size:1.6rem;line-height:1.1;font-weight:800}
+.facts span{color:var(--muted);font-size:.9rem}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{background:var(--grid)}
+td.q{text-align:right;font-weight:700}
+tr:last-child td{border-bottom:0}
+.btn{font:inherit;font-weight:700;border:2px solid var(--fg);background:transparent;color:var(--fg);border-radius:10px;padding:9px 14px;cursor:pointer;margin-top:12px}
+textarea{width:100%;min-height:160px;margin-top:10px;font:12px/1.4 ui-monospace,Menlo,Consolas,monospace;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:8px}
+.sticker{width:32mm;height:8mm;background:#1B1B1B;border:1px dashed #999;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;color:#E8C46A;font-size:2.3mm;letter-spacing:.05em;line-height:1.25;margin:10px 0;text-align:center}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:8px;font-size:.82rem;color:var(--muted)}
+.legend span{display:flex;align-items:center;gap:6px}
+@media (max-width:760px){
+  .stage{height:66vh;min-height:400px}
+  .grid2{grid-template-columns:1fr}
+  .ov-title{right:110px}
+  .ov-title p{display:none}
+  .hint{display:none}
+  .ov-bar .lbl{display:none}
+  .ov-bar{gap:8px;padding:12px}
+}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <canvas id="c" aria-label="Maquette 3D de la statue de François Mitterrand et de sa chienne Baltique, faites glisser pour tourner"></canvas>
+  <div class="scrim-top"></div><div class="scrim-bot"></div>
+  <div class="ov-title"><h1>François Mitterrand et Baltique</h1><p>Soustons. Notice de montage en 3D : <b id="fPieces">0</b> pièces, 26 niveaux, environ 25 cm de haut.</p></div>
+  <div class="ov-toggles">
+    <button class="pill" id="night" aria-pressed="false">Nuit</button>
+    <button class="pill" id="spin" aria-pressed="true">Rotation</button>
+    <button class="pill" id="bronze" aria-pressed="false">Bronze</button>
+  </div>
+  <div class="hint">Glissez pour tourner, molette ou pincement pour zoomer</div>
+  <div class="ov-bar">
+    <button id="prev" aria-label="Étape précédente">‹</button>
+    <button id="play" class="play" aria-label="Lancer le montage">▶</button>
+    <input id="range" type="range" min="0" max="28" value="28" aria-label="Choisir une étape">
+    <button id="next" aria-label="Étape suivante">›</button>
+    <span class="lbl" id="lbl"></span>
+  </div>
+  <div class="fail" id="fail">La vue 3D n'a pas pu se charger. Les plans étape par étape restent disponibles plus bas.</div>
+</div>
+<main>
+  <div class="stephead"><div class="stepnum" id="num">0</div><h2 id="title"></h2></div>
+  <div class="grid2">
+    <div>
+      <ul class="notes" id="notes"></ul>
+      <div class="stepparts" id="stepparts"></div>
+    </div>
+    <div class="panel"><h3 id="planTitle"></h3><div id="plan"></div>
+      <div class="legend" id="legend">
+        <span><i class="sw" style="background:#A0A5A9;opacity:.5"></i>niveau du dessous</span>
+        <span><i class="sw" style="background:#582A12"></i>bronze clair</span>
+        <span><i class="sw" style="background:#352100"></i>bronze sombre</span>
+        <span><svg width="18" height="18" viewBox="0 0 18 18"><rect x="1" y="1" width="16" height="16" rx="2" fill="none" stroke="#888" stroke-dasharray="3 2"/></svg>intérieur laissé creux</span>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <h2>Conseils de montage</h2>
+    <div class="tips">
+      <div><b>Une sculpture en tranches</b>Chaque niveau est une coupe horizontale de la statue, tous les 9 cm environ sur le vrai bronze. Posez toute la tranche avant de passer à la suivante.</div>
+      <div><b>Deux bronzes</b>Brun rougeâtre pour le manteau, le visage et les mains. Brun foncé pour le chapeau, l'écharpe, le pantalon et les chaussures. Baltique est tout en brun rougeâtre.</div>
+      <div><b>Coque creuse</b>Le cœur du corps reste vide, en pointillés sur le plan. Les briques longues font pont d'un bord à l'autre, et les niveaux pleins des épaules et du chapeau referment la coque.</div>
+      <div><b>Repérage</b>Les chiffres au-dessus du plan numérotent les colonnes de 1 à 32, de gauche à droite. Le bord avant de la plaque est en bas du plan. Le président et sa chienne marchent vers vous.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Du bronze à la maquette</h2>
+    <p>La maquette reprend les éléments publiés sur l'œuvre. La silhouette, le chapeau, le manteau et la posture du marcheur sont une interprétation, à caler sur des photos du monument.</p>
+    <div class="facts">
+      <div><strong>2,20 m</strong><span>Hauteur du bronze de Jacques Raoult, fondu par la fonderie d'art Denis à Rezé. Ici 24 niveaux au-dessus du socle, soit environ 1:9.</span></div>
+      <div><strong>65 cm</strong><span>Hauteur de Baltique, la labrador du président. Ici 7 niveaux.</span></div>
+      <div><strong>5 m</strong><span>Baltique marche devant son maître et semble le guider. Ici l'écart est réduit à une douzaine de tenons pour tenir sur la plaque.</span></div>
+      <div><strong>1996</strong><span>Mémorial inauguré le 21 mai 1996 par Danielle Mitterrand, au centre de Soustons, commune de la bergerie de Latche.</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Liste complète des pièces</h2>
+    <p>Calculée à partir des plans. Les références sont celles de BrickLink.</p>
+    <div class="tablewrap"><table id="bom"><thead><tr><th>Couleur</th><th>Pièce</th><th>Réf.</th><th style="text-align:right">Qté</th></tr></thead><tbody></tbody></table></div>
+    <button class="btn" id="xmlBtn">Copier la liste BrickLink (XML, +10 %)</button>
+    <textarea id="xml" readonly hidden aria-label="Liste BrickLink au format XML"></textarea>
+  </section>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// MODEL START
+const NL=26,LH=2.12/24,SC=1.2/LH; // hauteur d'un niveau en mètres réels, tenons par mètre
+const K=(x,y)=>x+','+y;
+function splitLen(n,stagger,sizes){sizes=sizes||[6,4,3,2,1];const out=[];let r=n;if(stagger&&n>=5){out.push(2);r-=2;}while(r>0){const s=sizes.find(v=>v<=r);out.push(s);r-=s;}return out;}
+// Primitives en mètres : u vers la droite, v vers l'avant (le sens de la marche), h vers le haut
+const ell=(c,r,col)=>({t:'ell',c,r,col,in:(u,v,h)=>((u-c[0])/r[0])**2+((v-c[1])/r[1])**2+((h-c[2])/r[2])**2<=1});
+const cap=(a,b,r,col)=>({t:'cap',a,b,r,col,in:(u,v,h)=>{const d=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],p=[u-a[0],v-a[1],h-a[2]];const L=d[0]*d[0]+d[1]*d[1]+d[2]*d[2];const t=Math.max(0,Math.min(1,(p[0]*d[0]+p[1]*d[1]+p[2]*d[2])/L));const q=[p[0]-t*d[0],p[1]-t*d[1],p[2]-t*d[2]];return q[0]*q[0]+q[1]*q[1]+q[2]*q[2]<=r*r;}});
+const cyl=(cu,cv,r,h0,h1,col)=>({t:'cyl',cu,cv,r,h0,h1,col,in:(u,v,h)=>h>=h0&&h<=h1&&(u-cu)**2+(v-cv)**2<=r*r});
+const coat=(prof,col)=>({t:'coat',prof,col,in:(u,v,h)=>{if(h<prof[0][0]||h>prof[prof.length-1][0])return false;for(let i=0;i<prof.length-1;i++){const A=prof[i],B=prof[i+1];if(h>=A[0]&&h<=B[0]){const t=(h-A[0])/(B[0]-A[0]),a=A[1]+t*(B[1]-A[1]),b=A[2]+t*(B[2]-A[2]),dv=A[3]+t*(B[3]-A[3]);return (u/a)**2+((v-dv)/b)**2<=1;}}return false;}});
+// Le président, en marche, chapeau, écharpe, long manteau, mains dans les poches
+const MAN={name:'man',cx:16,cy:19.5,l0:3,prims:[
+  ell([0,.09,1.97],[.125,.135,.15],'B'),cyl(0,.09,.21,1.84,1.93,'B'),
+  ell([0,.09,1.77],[.105,.12,.13],'N'),
+  cap([0,.05,1.55],[0,.07,1.68],.115,'B'),
+  cap([-.25,.02,1.5],[-.3,-.02,1.2],.075,'N'),cap([-.3,-.02,1.2],[-.24,.06,1.0],.07,'N'),
+  cap([.25,.02,1.5],[.3,-.02,1.2],.075,'N'),cap([.3,-.02,1.2],[.24,.06,1.0],.07,'N'),
+  coat([[.55,.28,.2,.03],[.8,.25,.18,.03],[1.05,.23,.16,.04],[1.35,.26,.17,.05],[1.52,.27,.16,.05],[1.6,.17,.12,.06]],'N'),
+  cap([-.1,.17,.1],[-.1,.03,.9],.085,'B'),cap([.1,-.15,.12],[.1,-.02,.9],.085,'B'),
+  ell([-.1,.25,.05],[.07,.15,.06],'B'),ell([.1,-.2,.07],[.07,.15,.06],'B')
+]};
+// Baltique, la labrador, qui ouvre la marche
+const DOG={name:'dog',cx:21,cy:9.5,l0:2,prims:[
+  ell([0,.42,.62],[.08,.11,.085],'N'),ell([0,.53,.59],[.05,.08,.05],'N'),
+  ell([-.075,.4,.6],[.03,.05,.07],'N'),ell([.075,.4,.6],[.03,.05,.07],'N'),
+  cap([0,.28,.48],[0,.38,.6],.075,'N'),
+  ell([0,.2,.43],[.12,.14,.14],'N'),ell([0,0,.42],[.13,.3,.13],'N'),
+  cap([0,-.29,.47],[0,-.45,.33],.04,'N'),
+  cap([-.07,.2,.36],[-.07,.22,.02],.045,'N'),cap([.07,.2,.36],[.07,.22,.02],.045,'N'),
+  cap([-.07,-.2,.38],[-.07,-.22,.02],.05,'N'),cap([.07,-.2,.38],[.07,-.22,.02],.05,'N')
+]};
+const FIGS=[MAN,DOG];
+const PLINTH={man:{x0:12,x1:19,y0:13,y1:24,h:2},dog:{x0:18,x1:23,y0:4,y1:15,h:1}};
+function sample(F,x,y,l){
+  const h=(l-F.l0+.5)*LH;if(h<0)return null;
+  const pts=[[.5,.5],[.22,.22],[.78,.22],[.22,.78],[.78,.78]];
+  for(const pr of F.prims)for(const [dx,dy] of pts){const u=(x+dx-F.cx)/SC,v=-(y+dy-F.cy)/SC;if(pr.in(u,v,h))return pr.col;}
+  return null;
+}
+const VOX=FIGS.map(F=>{const m=[];for(let l=1;l<=NL;l++){const lv=new Map();for(let x=0;x<32;x++)for(let y=0;y<32;y++){const c=sample(F,x,y,l);if(c)lv.set(K(x,y),c);}m.push(lv);}return m;});
+
+function buildLevel(l){
+  const cells=new Map(),groups=[],used=new Set();
+  const force=(x,y,c,t)=>cells.set(K(x,y),{x,y,c,t:t||'b'});
+  const put=(x,y,c,t)=>{if(!cells.has(K(x,y)))force(x,y,c,t);};
+  const add=(list,c,part,extra)=>{groups.push(Object.assign({cells:list,c,part,t:'b',kind:'brick',h:1},extra||{}));list.forEach(p=>used.add(K(p[0],p[1])));};
+  // Socles
+  Object.values(PLINTH).forEach(P=>{if(l>P.h)return;for(let x=P.x0;x<=P.x1;x++)for(let y=P.y0;y<=P.y1;y++){const edge=x===P.x0||x===P.x1||y===P.y0||y===P.y1;if(edge||l===P.h)put(x,y,edge&&l===P.h?'Y':'G');else{force(x,y,'G','occ');used.add(K(x,y));}}});
+  // Statues : coque creuse, le cœur reste vide quand il est fermé dessus, dessous et sur les côtés
+  VOX.forEach(V=>{
+    const cur=V[l-1],dn=V[l-2],upv=V[l];if(!cur)return;
+    cur.forEach((c,k)=>{
+      const [x,y]=k.split(',').map(Number);
+      const inner=dn&&upv&&dn.has(k)&&upv.has(k)&&[[1,0],[-1,0],[0,1],[0,-1]].every(([a,b])=>cur.has(K(x+a,y+b)));
+      if(inner){force(x,y,c,'occ');used.add(k);}else force(x,y,c);
+    });
+  });
+  const free=(x,y,c)=>{const cl=cells.get(K(x,y));return !!cl&&cl.t==='b'&&cl.c===c&&!used.has(K(x,y));};
+  const pass=(dir,minLen)=>{
+    const dx=dir==='x'?1:0,dy=1-dx;
+    const list=[...cells.values()].filter(cl=>cl.t==='b'&&!used.has(K(cl.x,cl.y)));
+    list.sort(dir==='x'?(a,b)=>a.y-b.y||a.x-b.x:(a,b)=>a.x-b.x||a.y-b.y);
+    for(const cl of list){
+      if(used.has(K(cl.x,cl.y))||free(cl.x-dx,cl.y-dy,cl.c))continue;
+      const run=[];let x=cl.x,y=cl.y;while(free(x,y,cl.c)){run.push([x,y]);x+=dx;y+=dy;}
+      if(run.length<minLen)continue;
+      let i=0;splitLen(run.length,(l+cl.x+cl.y)%2===0).forEach(n=>{add(run.slice(i,i+n),cl.c,'1x'+n);i+=n;});
+    }
+  };
+  const pref=l%2?'x':'y',other=pref==='x'?'y':'x';
+  pass(pref,2);pass(other,1);pass(pref,1);
+  return {l,cells,groups};
+}
+const LV=[];for(let l=1;l<=NL;l++)LV.push(buildLevel(l));
+// MODEL END
+// ================= Catalogue
+const COL={
+  N:{n:'Brun rougeâtre',hex:'#582A12',bl:88},B:{n:'Brun foncé',hex:'#352100',bl:120},
+  G:{n:'Gris clair',hex:'#A0A5A9',bl:86},Y:{n:'Beige foncé',hex:'#958A73',bl:69},
+  K:{n:'Noir',hex:'#1B1B1B',bl:11},V:{n:'Vert',hex:'#237841',bl:6},S:{n:'Beige (Tan)',hex:'#E4CD9E',bl:2},D:{n:'Gris foncé',hex:'#6C6E68',bl:85}
+};
+const COLORDER='NBGYDSKV';
+const CAT={
+  '1x1':['3005','Brique 1x1'],'1x2':['3004','Brique 1x2'],'1x3':['3622','Brique 1x3'],'1x4':['3010','Brique 1x4'],'1x6':['3009','Brique 1x6'],
+  'bp':['3811','Plaque de base 32x32'],'t24':['87079','Tuile 2x4'],'t14':['2431','Tuile 1x4 + autocollant'],'pine':['3471','Pin 4x4x6 2/3'],'r':['3062b','Brique ronde 1x1']
+};
+const PINES=[[3,26],[7,5],[28,27],[27,20]];
+// Pavage : tuiles 2x4 posées partout où il n'y a ni socle ni pin
+const PAVE=[];(()=>{const busy=(x,y)=>Object.values(PLINTH).some(P=>x>=P.x0&&x<=P.x1&&y>=P.y0&&y<=P.y1)||PINES.some(([a,b])=>Math.abs(x-a)<=1.5&&Math.abs(y-b)<=1.5);
+  for(let y=0;y<32;y+=2)for(let x=8;x<28;x+=4){let ok=true;for(let i=0;i<4;i++)for(let j=0;j<2;j++)if(busy(x+i,y+j))ok=false;if(ok)PAVE.push([x,y]);}})();
+const EXTRA={
+  base:[['bp','V',1]],
+  deco:[['t14','K',1],['r','N',PINES.length*2],['pine','V',PINES.length]],
+  socle:[['t24','S',PAVE.length]]
+};
+function tally(groups){const m={};groups.forEach(g=>{const k=g.part+'|'+g.c;m[k]=(m[k]||0)+1;});return m;}
+function addList(m,list){list.forEach(([p,c,q])=>{const k=p+'|'+c;m[k]=(m[k]||0)+q;});return m;}
+const sortParts=(a,b)=>{const[pa,ca]=a[0].split('|'),[pb,cb]=b[0].split('|');return COLORDER.indexOf(ca)-COLORDER.indexOf(cb)||CAT[pa][0].localeCompare(CAT[pb][0]);};
+const isRound=p=>p==='r';
+
+const STEPS=[{k:'base'}];for(let l=1;l<=NL;l++)STEPS.push({k:'lvl',l});STEPS.push({k:'deco'},{k:'socle'});
+const LAST=STEPS.length-1;
+
+// ================= Textes
+const TITLE=l=>l===1?'Socles':l===2?'Corniche du socle et pattes de Baltique':l<=8?'Jambes du président, corps de Baltique':l<=10?'Bas du manteau':l<=14?'Manteau':l<=18?'Poitrine et bras':l<=21?'Épaules et écharpe':l<=23?'Visage':l===24?'Bord du chapeau':'Calotte du chapeau';
+function levelNotes(l){
+  const t=[];const cnt=(F)=>VOX[F][l-1].size;
+  if(l===1){t.push("Posez ce premier rang directement sur la plaque, sur les emplacements repérés à l'étape 0.");t.push("Deux socles en gris clair : le grand pour le président, colonnes 13 à 20, le petit pour Baltique, devant à droite. Seul le pourtour est en briques, le centre reste creux.");}
+  if(l===2){t.push("Socle du président : rang plein en gris clair, pourtour en beige foncé. Il ferme le socle et porte les chaussures.");t.push("Baltique : les quatre pattes, une ou deux briques 1x1 chacune, directement sur son socle.");}
+  if(l===3)t.push("Président : les deux chaussures en brun foncé. La gauche est en avant, il est en marche.");
+  if(l>=4&&l<=8)t.push("Président : les deux jambes du pantalon en brun foncé, écartées par le pas.");
+  if(l===5)t.push("Baltique : le ventre se referme au-dessus des pattes.");
+  if(l>=6&&l<=8)t.push("Baltique : le dos, la poitrine et la queue. La tête pointe vers l'avant de la plaque.");
+  if(l===8)t.push("Baltique : sommet de la tête et oreilles. Elle est terminée.");
+  if(l===9)t.push("Président : le bas du long manteau apparaît, il enveloppe les jambes.");
+  if(l>=10&&l<=14)t.push("Manteau : coque d'une brique d'épaisseur, le centre reste creux.");
+  if(l>=14&&l<=18)t.push("Bras : ils descendent le long du manteau, les mains dans les poches.");
+  if(l===19)t.push("Épaules : dernier rang du manteau, l'écharpe apparaît au col.");
+  if(l===20||l===21)t.push("Col : l'écharpe en brun foncé fait le tour du cou.");
+  if(l===22||l===23)t.push("Visage : un bloc de brun rougeâtre, légèrement en avant, la tête un peu penchée comme celle d'un marcheur fatigué.");
+  if(l===24)t.push("Chapeau : le bord, un disque en brun foncé plus large que la tête.");
+  if(l>=25)t.push("Chapeau : la calotte arrondie du feutre, en brun foncé.");
+  if(l>=3){const a=cnt(0),b=cnt(1);t.push(`Cette tranche : ${a} tenons pour le président${b?`, ${b} pour Baltique`:''}.`);}
+  return t;
+}
+
+// ================= Plans 2D
+function planSVG(l){
+  const S=14,m=6,top=18,bot=22,N=32,W=N*S+2*m,H=N*S+top+bot;
+  const L=LV[l-1],P=l>1?LV[l-2]:null;
+  const px=x=>m+x*S,py=y=>top+(31-y)*S;
+  let s=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Plan du niveau ${l}">`;
+  for(let x=0;x<N;x++)for(let y=0;y<N;y++)s+=`<rect x="${px(x)+.5}" y="${py(y)+.5}" width="${S-1}" height="${S-1}" fill="var(--grid)"/>`;
+  [1,5,10,15,20,25,30].forEach(n=>{s+=`<text x="${px(n-1)+S/2}" y="12" font-size="10" text-anchor="middle" fill="var(--muted)" font-family="DM Sans,sans-serif">${n}</text>`;});
+  if(P)P.cells.forEach(c=>{if(c.t!=='occ')s+=`<rect x="${px(c.x)+1}" y="${py(c.y)+1}" width="${S-2}" height="${S-2}" fill="#A0A5A9" opacity=".5" rx="1"/>`;});
+  L.cells.forEach(c=>{if(c.t==='occ')s+=`<rect x="${px(c.x)+1.5}" y="${py(c.y)+1.5}" width="${S-3}" height="${S-3}" fill="none" stroke="#888" stroke-dasharray="3 2" rx="1"/>`;});
+  L.groups.forEach(g=>{
+    const xs=g.cells.map(p=>p[0]),ys=g.cells.map(p=>p[1]);
+    const xa=Math.min(...xs),xb=Math.max(...xs),ya=Math.min(...ys),yb=Math.max(...ys);
+    const fill=COL[g.c].hex,X=px(xa)+1,Y=py(yb)+1,Wd=(xb-xa+1)*S-2,Hd=(yb-ya+1)*S-2;
+    s+=`<rect x="${X}" y="${Y}" width="${Wd}" height="${Hd}" rx="2" fill="${fill}" stroke="var(--stroke)"/>`;
+    g.cells.forEach(p=>{s+=`<circle cx="${px(p[0])+S/2}" cy="${py(p[1])+S/2}" r="${S*.26}" fill="${fill}" stroke="rgba(255,255,255,.25)" stroke-width=".8"/>`;});
+  });
+  s+=`<text x="${W/2}" y="${H-5}" font-size="11" text-anchor="middle" fill="var(--muted)" font-family="DM Sans,sans-serif">▼ sens de la marche, bord avant de la plaque</text></svg>`;
+  return s;
+}
+function baseSVG(full){
+  const S=10,W=32*S,H=32*S,X=x=>x*S,R=r=>(31-r)*S;
+  let s=`<svg viewBox="0 0 ${W} ${H+16}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Plaque de base">`;
+  s+=`<rect width="${W}" height="${H}" fill="#237841" rx="3"/>`;
+  for(let x=0;x<32;x++)for(let r=0;r<32;r++)s+=`<circle cx="${X(x)+S/2}" cy="${R(r)+S/2}" r="3" fill="#2E8B4E"/>`;
+  if(full)PAVE.forEach(([x,y])=>{s+=`<rect x="${X(x)+.5}" y="${R(y+1)+.5}" width="${4*S-1}" height="${2*S-1}" fill="${COL.S.hex}" stroke="#b9a57c" rx="1"/>`;});
+  LV[0].cells.forEach(c=>{s+=`<rect x="${X(c.x)+.5}" y="${R(c.y)+.5}" width="${S-1}" height="${S-1}" fill="${full?COL[c.c].hex:'#F5C235'}"/>`;});
+  if(full){
+    VOX[0].forEach((v,l)=>{});
+    [0,1].forEach(i=>{const top=new Map();VOX[i].forEach(lv=>lv.forEach((c,k)=>top.set(k,c)));top.forEach((c,k)=>{const [x,y]=k.split(',').map(Number);s+=`<rect x="${X(x)+1}" y="${R(y)+1}" width="${S-2}" height="${S-2}" fill="${COL[c].hex}"/>`;});});
+    PINES.forEach(([x,r])=>{s+=`<circle cx="${X(x)+S/2}" cy="${R(r)+S/2}" r="${S*2}" fill="#2f7a47" stroke="#1b5e33"/>`;});
+    s+=`<rect x="${X(16)+1}" y="${R(13)+2}" width="${4*S-2}" height="${S-4}" fill="#1B1B1B"/>`;
+  }
+  s+=`<text x="${W/2}" y="${H+13}" font-size="11" text-anchor="middle" fill="var(--muted)" font-family="DM Sans,sans-serif">▼ bord avant de la plaque</text></svg>`;
+  return s;
+}
+function chips(m){
+  return Object.entries(m).sort(sortParts).map(([k,q])=>{const[p,c]=k.split('|');return `<span class="chip"><i class="sw${isRound(p)?' round':''}" style="background:${COL[c].hex}"></i><b>${q}×</b> ${CAT[p][1]}</span>`;}).join('');
+}
+
+// ================= 3D
+const BH=1.2;
+let three=null;
+function init3D(){
+  if(typeof THREE==='undefined')throw new Error('three');
+  const canvas=document.getElementById('c'),stage=document.getElementById('stage');
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+  renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.NoToneMapping;
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(34,1,.5,600);
+  const hemi=new THREE.HemisphereLight(0xeef5ff,0x6b6552,.66);scene.add(hemi);
+  const sun=new THREE.DirectionalLight(0xfff1dc,1.05);sun.position.set(-28,52,34);sun.castShadow=true;
+  sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-30,right:30,top:36,bottom:-30,near:1,far:150});sun.shadow.bias=-.0006;sun.shadow.normalBias=.02;
+  scene.add(sun);
+  const lin=h=>new THREE.Color(h).convertSRGBToLinear();
+  const MAT={};
+  function mat(c){if(MAT[c])return MAT[c];return MAT[c]=new THREE.MeshStandardMaterial({color:lin(COL[c].hex),roughness:c==='N'||c==='B'?.3:.4,metalness:0});}
+  const nonIdx=g=>g.index?g.toNonIndexed():g;
+  function merge(list){
+    list=list.map(nonIdx);let n=0;list.forEach(g=>n+=g.attributes.position.count);
+    const pos=new Float32Array(n*3),nor=new Float32Array(n*3);let o=0;
+    list.forEach(g=>{pos.set(g.attributes.position.array,o*3);nor.set(g.attributes.normal.array,o*3);o+=g.attributes.position.count;});
+    const m=new THREE.BufferGeometry();m.setAttribute('position',new THREE.BufferAttribute(pos,3));m.setAttribute('normal',new THREE.BufferAttribute(nor,3));return m;
+  }
+  const box=(w,h,d,x,y,z)=>{const g=new THREE.BoxGeometry(w,h,d);g.translate(x,y,z);return g;};
+  const stud=(x,y,z)=>{const g=new THREE.CylinderGeometry(.3,.3,.18,16);g.translate(x,y+.09,z);return g;};
+  const GEO={};
+  function brickGeo(w,d,studs){const k='b'+w+'x'+d+':'+studs.join(';');if(GEO[k])return GEO[k];
+    return GEO[k]=merge([box(w-.04,BH-.02,d-.04,0,BH/2,0)].concat(studs.map(s=>stud(s[0],BH,s[1]))));}
+  const wx=x=>x-15.5,wz=y=>15.5-y;
+
+  const levelMeshes=[];const deco=[],socle=[],markers=[];
+  LV.forEach(L=>{
+    const arr=[];
+    L.groups.forEach(g=>{
+      const xs=g.cells.map(p=>p[0]),ys=g.cells.map(p=>p[1]);
+      const xa=Math.min(...xs),xb=Math.max(...xs),ya=Math.min(...ys),yb=Math.max(...ys);
+      const cx=(wx(xa)+wx(xb))/2,cz=(wz(ya)+wz(yb))/2,W=xb-xa+1,D=yb-ya+1;
+      const studs=g.cells.map(p=>[wx(p[0])-cx,wz(p[1])-cz]);
+      const mesh=new THREE.Mesh(brickGeo(W,D,studs),mat(g.c));
+      mesh.position.set(cx,(L.l-1)*BH,cz);mesh.userData.baseY=(L.l-1)*BH;mesh.castShadow=true;mesh.receiveShadow=true;scene.add(mesh);arr.push(mesh);
+    });
+    levelMeshes.push(arr);
+  });
+  // la sculpture de référence, en bronze lisse
+  const bronzeMat={N:new THREE.MeshStandardMaterial({color:lin('#7a4a26'),metalness:.75,roughness:.38}),B:new THREE.MeshStandardMaterial({color:lin('#3e2a16'),metalness:.7,roughness:.42})};
+  const ref=new THREE.Group();ref.visible=false;scene.add(ref);
+  const up=new THREE.Vector3(0,1,0);
+  FIGS.forEach(F=>{
+    const base=(F.l0-1)*BH,W=(u,v,h)=>new THREE.Vector3(F.cx-16+u*SC,base+h*SC,16-F.cy+v*SC);
+    F.prims.forEach(p=>{
+      const m=bronzeMat[p.col];let mesh;
+      if(p.t==='ell'){mesh=new THREE.Mesh(new THREE.SphereGeometry(1,28,18),m);mesh.scale.set(p.r[0]*SC,p.r[2]*SC,p.r[1]*SC);mesh.position.copy(W(...p.c));}
+      else if(p.t==='cyl'){mesh=new THREE.Mesh(new THREE.CylinderGeometry(p.r*SC,p.r*SC,(p.h1-p.h0)*SC,28),m);mesh.position.copy(W(p.cu,p.cv,(p.h0+p.h1)/2));}
+      else if(p.t==='cap'){const A=W(...p.a),B=W(...p.b),d=B.clone().sub(A),len=d.length();const g=new THREE.Group();
+        const c=new THREE.Mesh(new THREE.CylinderGeometry(p.r*SC,p.r*SC,len,18),m);c.position.copy(A.clone().add(B).multiplyScalar(.5));c.quaternion.setFromUnitVectors(up,d.clone().normalize());g.add(c);
+        [A,B].forEach(P=>{const s=new THREE.Mesh(new THREE.SphereGeometry(p.r*SC,18,12),m);s.position.copy(P);g.add(s);});mesh=g;}
+      else if(p.t==='coat'){const seg=32,pos=[];const ring=(A)=>{const r=[];for(let i=0;i<=seg;i++){const a=i/seg*Math.PI*2;r.push(W(Math.cos(a)*A[1],A[3]+Math.sin(a)*A[2],A[0]));}return r;};
+        const rings=p.prof.map(ring);for(let k=0;k<rings.length-1;k++)for(let i=0;i<seg;i++){const a=rings[k][i],b=rings[k][i+1],c=rings[k+1][i],d=rings[k+1][i+1];pos.push(a.x,a.y,a.z,c.x,c.y,c.z,b.x,b.y,b.z,b.x,b.y,b.z,c.x,c.y,c.z,d.x,d.y,d.z);}
+        const top=rings[rings.length-1],ctr=W(0,p.prof[p.prof.length-1][3],p.prof[p.prof.length-1][0]);for(let i=0;i<seg;i++)pos.push(ctr.x,ctr.y,ctr.z,top[i].x,top[i].y,top[i].z,top[i+1].x,top[i+1].y,top[i+1].z);
+        const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.computeVertexNormals();mesh=new THREE.Mesh(g,m);m.side=THREE.DoubleSide;}
+      mesh.traverse(o=>{o.castShadow=true;});ref.add(mesh);
+    });
+  });
+  // plaque et sol
+  const ground=new THREE.Mesh(new THREE.CircleGeometry(160,48),new THREE.MeshStandardMaterial({color:lin('#c9d4dc'),roughness:1}));
+  ground.rotation.x=-Math.PI/2;ground.position.y=-.34;ground.receiveShadow=true;scene.add(ground);
+  const plate=new THREE.Mesh(new THREE.BoxGeometry(32,.32,32),mat('V'));plate.position.y=-.16;plate.receiveShadow=true;scene.add(plate);
+  const studsI=new THREE.InstancedMesh(new THREE.CylinderGeometry(.3,.3,.18,12),mat('V'),1024);
+  const M4=new THREE.Matrix4();let si=0;for(let x=0;x<32;x++)for(let z=0;z<32;z++){M4.makeTranslation(x-15.5,.09,z-15.5);studsI.setMatrixAt(si++,M4);}
+  studsI.receiveShadow=true;scene.add(studsI);
+  const mk=new THREE.MeshBasicMaterial({color:0xF5C235,transparent:true,opacity:.85});
+  LV[0].cells.forEach(c=>{const m=new THREE.Mesh(new THREE.BoxGeometry(.9,.06,.9),mk);m.position.set(wx(c.x),.21,wz(c.y));scene.add(m);markers.push(m);});
+  // décors : plaque et pins des Landes
+  const addD=(m,arr)=>{m.traverse(o=>{o.castShadow=true;o.receiveShadow=true;});m.userData.baseY=m.position.y;scene.add(m);arr.push(m);return m;};
+  const cv=document.createElement('canvas');cv.width=512;cv.height=128;const c2=cv.getContext('2d');c2.fillStyle='#1B1B1B';c2.fillRect(0,0,512,128);c2.fillStyle='#E8C46A';c2.textAlign='center';c2.font='800 50px "DM Sans", Arial, sans-serif';c2.fillText('F. MITTERRAND',256,60);c2.font='700 36px "DM Sans", Arial, sans-serif';c2.fillText('1916 – 1996',256,106);
+  const tex=new THREE.CanvasTexture(cv);tex.encoding=THREE.sRGBEncoding;tex.anisotropy=4;
+  const km=mat('K'),tm=new THREE.MeshStandardMaterial({map:tex,roughness:.35});
+  const plq=new THREE.Mesh(new THREE.BoxGeometry(3.96,.32,.96),[km,km,tm,km,km,km]);plq.position.set(wx(17.5),2*BH+.16,wz(13));addD(plq,deco);
+  const needle=new THREE.MeshStandardMaterial({color:lin('#2b6b3f'),roughness:.7,flatShading:true});
+  PINES.forEach(([x,y],i)=>{const g=new THREE.Group();const tr=new THREE.Mesh(new THREE.CylinderGeometry(.47,.47,2*BH,16),mat('N'));tr.position.y=BH;g.add(tr);
+    [[3.4,4.2,3.4],[2.6,3.6,5.8],[1.7,3,8]].forEach(([r,h,y0])=>{const c=new THREE.Mesh(new THREE.ConeGeometry(r,h,9),needle);c.position.y=y0;c.rotation.y=i;g.add(c);});
+    g.position.set(wx(x)+.5,0,wz(y)-.5);addD(g,deco);});
+  PAVE.forEach(([x,y])=>{const t=new THREE.Mesh(new THREE.BoxGeometry(3.96,.4,1.96),mat('S'));t.position.set(wx(x+1.5),.2,wz(y+.5));addD(t,socle);});
+  // nuit
+  const spots=[[-10,1,26],[14,1,26],[0,1,-8]].map(p=>{const s=new THREE.SpotLight(0xffd9a0,0,0,.35,.7);s.position.set(...p);s.target.position.set(0,12,-3);scene.add(s);scene.add(s.target);return s;});
+  const sv=[];for(let i=0;i<700;i++){const u=Math.random()*2-1,a=Math.random()*Math.PI*2,r=220,y=Math.abs(u);sv.push(r*Math.sqrt(1-u*u)*Math.cos(a),r*y+10,r*Math.sqrt(1-u*u)*Math.sin(a));}
+  const sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.Float32BufferAttribute(sv,3));
+  const stars=new THREE.Points(sg,new THREE.PointsMaterial({color:0xffffff,size:1.1,sizeAttenuation:false}));stars.visible=false;scene.add(stars);
+  const moon=new THREE.Mesh(new THREE.SphereGeometry(7,32,16),new THREE.MeshBasicMaterial({color:0xfff6dc}));moon.position.set(110,120,-160);moon.visible=false;scene.add(moon);
+  scene.fog=new THREE.Fog(0xBFD9EE,150,420);
+  function setNight(on){
+    stage.classList.toggle('night',on);
+    const bgc=on?0x0B1828:0xBFD9EE;renderer.setClearColor(bgc);scene.fog.color.set(bgc);
+    hemi.intensity=on?.14:.66;hemi.color.set(on?0x8aa4d6:0xe8f2ff);
+    sun.intensity=on?.2:1.05;sun.color.set(on?0x9fb8ff:0xfff1dc);
+    spots.forEach(s=>s.intensity=on?1.3:0);
+    ground.material.color.copy(lin(on?'#1c2636':'#c9d4dc'));
+    stars.visible=moon.visible=on;
+  }
+  let bronze=false;
+  function setBronze(on){bronze=on;ref.visible=on;levelMeshes.forEach((a,i)=>{const L=LV[i];a.forEach((m,j)=>{const c=L.groups[j].c;if(c==='N'||c==='B')m.visible=!on&&i+1<=curLvl;});});}
+  // caméra
+  let th=.62,ph=1.2,rad=82,autoSpin=true,lastUser=0;const tgt=new THREE.Vector3(0,14,0);let tgtY=14;
+  function updCam(){camera.position.set(tgt.x+rad*Math.sin(ph)*Math.sin(th),tgt.y+rad*Math.cos(ph),tgt.z+rad*Math.sin(ph)*Math.cos(th));camera.lookAt(tgt);}
+  const ptrs=new Map();let pinch0=0,rad0=rad;
+  canvas.addEventListener('pointerdown',e=>{canvas.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,[e.clientX,e.clientY]);lastUser=performance.now();if(ptrs.size===2){const[a,b]=[...ptrs.values()];pinch0=Math.hypot(a[0]-b[0],a[1]-b[1]);rad0=rad;}});
+  canvas.addEventListener('pointermove',e=>{if(!ptrs.has(e.pointerId))return;const p=ptrs.get(e.pointerId);lastUser=performance.now();
+    if(ptrs.size===1){th-=(e.clientX-p[0])*.008;ph=Math.min(1.5,Math.max(.25,ph-(e.clientY-p[1])*.006));}
+    ptrs.set(e.pointerId,[e.clientX,e.clientY]);
+    if(ptrs.size===2){const[a,b]=[...ptrs.values()];const d=Math.hypot(a[0]-b[0],a[1]-b[1]);if(pinch0)rad=Math.min(130,Math.max(18,rad0*pinch0/d));}});
+  const upE=e=>{ptrs.delete(e.pointerId);if(ptrs.size<2)pinch0=0;};
+  canvas.addEventListener('pointerup',upE);canvas.addEventListener('pointercancel',upE);
+  canvas.addEventListener('wheel',e=>{e.preventDefault();rad=Math.min(130,Math.max(18,rad*(1+e.deltaY*.001)));lastUser=performance.now();},{passive:false});
+  function resize(){const w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.fov=w<600?46:34;camera.updateProjectionMatrix();}
+  window.addEventListener('resize',resize);resize();
+  const anims=[];const ease=t=>1-Math.pow(1-t,3);
+  function drop(list){const t0=performance.now();list.forEach((m,i)=>{m.position.y=m.userData.baseY+6;anims.push({m,t0:t0+i*14,dur:420});});}
+  let curLvl=NL;
+  function show(step,prev){
+    const lvl=STEPS[step].k==='lvl'?STEPS[step].l:(step===0?0:NL);curLvl=lvl;
+    levelMeshes.forEach((arr,i)=>arr.forEach(m=>{m.visible=i+1<=lvl;}));
+    deco.forEach(m=>m.visible=step>=27);socle.forEach(m=>m.visible=step>=28);markers.forEach(m=>m.visible=step===0);
+    anims.length=0;levelMeshes.forEach(a=>a.forEach(m=>m.position.y=m.userData.baseY));deco.concat(socle).forEach(m=>m.position.y=m.userData.baseY);
+    if(prev===step-1&&!bronze){if(STEPS[step].k==='lvl')drop(levelMeshes[step-1]);else if(step===27)drop(deco);else if(step===28)drop(socle);}
+    tgtY=step===0?3:lvl>=NL?14:Math.max(5,Math.min(14,lvl*BH*.55+3));
+    setBronze(bronze);
+  }
+  function loop(now){
+    for(let i=anims.length-1;i>=0;i--){const a=anims[i];const t=Math.min(1,Math.max(0,(now-a.t0)/a.dur));a.m.position.y=a.m.userData.baseY+6*(1-ease(t));if(t>=1)anims.splice(i,1);}
+    if(autoSpin&&now-lastUser>3500&&!ptrs.size)th+=.0018;
+    tgt.y+=(tgtY-tgt.y)*.06;updCam();
+    renderer.render(scene,camera);requestAnimationFrame(loop);
+  }
+  setNight(false);requestAnimationFrame(loop);
+  return{show,setNight,setSpin:v=>{autoSpin=v;},setBronze};
+}
+
+// ================= Interface
+let step=LAST;
+function render(prev){
+  const st=STEPS[step];
+  document.getElementById('num').textContent=step;
+  document.getElementById('range').value=step;
+  document.getElementById('prev').disabled=step===0;
+  document.getElementById('next').disabled=step===LAST;
+  document.getElementById('lbl').textContent=`Étape ${step} sur ${LAST}`;
+  let title,notes,plan,planTitle,parts;
+  if(st.k==='base'){
+    title='Repérer les emplacements<small>Plaque de base</small>';
+    notes=["Posez la plaque verte 32x32 devant vous, bord avant vers vous. Le président et Baltique marchent vers vous.","Le socle du président occupe les colonnes 13 à 20, du 14e au 25e rang.","Baltique ouvre la marche, devant à droite : colonnes 19 à 24, du 5e au 16e rang.","Pins et pavés viennent à la fin, pour garder les mains libres."];
+    plan=baseSVG(false);planTitle='Emprises en jaune';parts=addList({},EXTRA.base);
+  }else if(st.k==='lvl'){
+    const L=LV[st.l-1];
+    title=`Niveau ${st.l}<small>${TITLE(st.l)}, ${L.groups.length} pièces</small>`;
+    notes=levelNotes(st.l);plan=planSVG(st.l);planTitle=`Vue de dessus du niveau ${st.l}`;parts=tally(L.groups);
+  }else if(st.k==='deco'){
+    title='Plaque et pins des Landes<small>Finitions</small>';
+    notes=["Collez l'autocollant ci-contre sur la tuile 1x4 noire et posez-la à l'avant du socle, à droite du pied gauche.","Quatre pins : deux briques rondes brun rougeâtre pour le tronc, puis le pin 3471 par-dessus."];
+    plan=`<p style="margin:4px 0 0">Autocollant à l'échelle 1 : imprimez à 100 %, découpez au trait.</p><div class="sticker"><span>F. MITTERRAND</span><span>1916 – 1996</span></div><p style="margin:0;color:var(--muted);font-size:.9rem">32 × 8 mm, la taille d'une tuile 1x4.</p>`;
+    planTitle='Autocollant de la plaque';parts=addList({},EXTRA.deco);
+  }else{
+    title='Pavés de la place<small>Aménagements</small>';
+    notes=[`${PAVE.length} tuiles 2x4 beiges posées en damier autour des socles, colonnes 9 à 28.`,"La place reste ouverte sur les bords, où le vert de la plaque fait la pelouse."];
+    plan=baseSVG(true);planTitle='Plaque terminée';parts=addList({},EXTRA.socle);
+  }
+  document.getElementById('title').innerHTML=title;
+  document.getElementById('notes').innerHTML=notes.map(n=>`<li>${n}</li>`).join('');
+  document.getElementById('plan').innerHTML=plan;
+  document.getElementById('planTitle').textContent=planTitle;
+  document.getElementById('legend').style.display=st.k==='lvl'?'':'none';
+  document.getElementById('stepparts').innerHTML=chips(parts);
+  if(three)three.show(step,prev);
+}
+const ALL={};LV.forEach(L=>{const t=tally(L.groups);for(const k in t)ALL[k]=(ALL[k]||0)+t[k];});
+addList(ALL,EXTRA.base);addList(ALL,EXTRA.deco);addList(ALL,EXTRA.socle);
+const rows=Object.entries(ALL).sort(sortParts);let total=0;
+document.querySelector('#bom tbody').innerHTML=rows.map(([k,q])=>{total+=q;const[p,c]=k.split('|');return `<tr><td><span style="display:flex;gap:8px;align-items:center"><i class="sw${isRound(p)?' round':''}" style="background:${COL[c].hex}"></i>${COL[c].n}</span></td><td>${CAT[p][1]}</td><td>${CAT[p][0]}</td><td class="q">${q}</td></tr>`;}).join('')+`<tr><td colspan="3"><b>Total</b></td><td class="q">${total}</td></tr>`;
+document.getElementById('fPieces').textContent=total;
+const xml='<INVENTORY>\n'+rows.map(([k,q])=>{const[p,c]=k.split('|');return `  <ITEM><ITEMTYPE>P</ITEMTYPE><ITEMID>${CAT[p][0]}</ITEMID><COLOR>${COL[c].bl}</COLOR><MINQTY>${Math.ceil(q*1.1)}</MINQTY><CONDITION>N</CONDITION></ITEM>`;}).join('\n')+'\n</INVENTORY>';
+const ta=document.getElementById('xml');ta.value=xml;
+document.getElementById('xmlBtn').addEventListener('click',async()=>{const b=document.getElementById('xmlBtn');try{await navigator.clipboard.writeText(xml);b.textContent='Liste copiée';}catch(e){ta.hidden=false;ta.select();b.textContent='Copiez le XML ci-dessous';}});
+
+try{three=init3D();}catch(e){document.getElementById('fail').style.display='flex';}
+let timer=null;
+const go=(s)=>{const p=step;step=Math.max(0,Math.min(LAST,s));render(p);};
+const stopPlay=()=>{clearInterval(timer);timer=null;document.getElementById('play').textContent='▶';document.getElementById('play').setAttribute('aria-label','Lancer le montage');};
+document.getElementById('prev').onclick=()=>{stopPlay();go(step-1);};
+document.getElementById('next').onclick=()=>{stopPlay();go(step+1);};
+document.getElementById('range').oninput=e=>{stopPlay();go(+e.target.value);};
+document.getElementById('play').onclick=()=>{
+  if(timer){stopPlay();return;}
+  if(step===LAST)go(0);
+  const b=document.getElementById('play');b.textContent='❚❚';b.setAttribute('aria-label','Mettre en pause');
+  timer=setInterval(()=>{if(step>=LAST){stopPlay();return;}go(step+1);},1300);
+};
+const toggle=(id,fn)=>{document.getElementById(id).onclick=e=>{const on=e.currentTarget.getAttribute('aria-pressed')!=='true';e.currentTarget.setAttribute('aria-pressed',on);if(three)fn(on);};};
+toggle('night',v=>three.setNight(v));toggle('spin',v=>three.setSpin(v));toggle('bronze',v=>three.setBronze(v));
+document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;if(e.key==='ArrowRight')document.getElementById('next').click();if(e.key==='ArrowLeft')document.getElementById('prev').click();});
+render();
+</script>
+</body>
+</html>
