@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Cathédrale de Bayonne LEGO</title>
+<title>Château d'Elsa LEGO</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&display=swap" rel="stylesheet">
@@ -17,7 +17,7 @@
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*::before,*::after{box-sizing:inherit}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:'DM Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;line-height:1.5;font-feature-settings:"tnum" 1}
-.stage{position:relative;height:min(80vh,760px);min-height:440px;background:#BFD9EE;overflow:hidden;transition:background .6s}
+.stage{position:relative;height:min(80vh,760px);min-height:440px;background:#8FCBE6;overflow:hidden;transition:background .6s}
 .stage.night{background:#0B1828}
 .stage canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
 .stage canvas:active{cursor:grabbing}
@@ -65,6 +65,8 @@ section>p{color:var(--muted);margin:0 0 14px;max-width:70ch}
 .facts div{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--card)}
 .facts strong{display:block;font-size:1.6rem;line-height:1.1;font-weight:800}
 .facts span{color:var(--muted);font-size:.9rem}
+.fine{color:var(--muted);font-size:.85rem;margin-top:28px}
+.sticker{width:16mm;height:16mm;border-radius:50%;background:#AEEFEC;border:1px dashed #999;display:flex;align-items:center;justify-content:center;margin:10px 0}
 .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}
 table{border-collapse:collapse;width:100%;font-size:.92rem}
 th,td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
@@ -88,14 +90,15 @@ textarea{width:100%;min-height:160px;margin-top:10px;font:12px/1.4 ui-monospace,
 </head>
 <body>
 <div class="stage" id="stage">
-  <canvas id="c" aria-label="Maquette 3D de la cathédrale de Bayonne, faites glisser pour tourner"></canvas>
+  <canvas id="c" aria-label="Maquette 3D du château de glace d'Elsa, faites glisser pour tourner"></canvas>
   <div class="scrim-top"></div><div class="scrim-bot"></div>
-  <div class="ov-title"><h1>La cathédrale de Bayonne</h1><p>Notice de montage en 3D : <b id="fPieces">0</b> pièces, 26 niveaux, environ 28 cm de haut avec les croix.</p></div>
+  <div class="ov-title"><h1>Le château d'Elsa</h1><p>Notice de montage en 3D : <b id="fPieces">0</b> pièces, 26 niveaux, environ 30 cm de haut avec l'étoile.</p></div>
   <div class="ov-toggles">
     <button class="pill" id="night" aria-pressed="false">Nuit</button>
     <button class="pill" id="spin" aria-pressed="true">Rotation</button>
+    <button class="pill" id="snow" aria-pressed="true">Neige</button>
   </div>
-  <div class="hint">Glissez pour tourner, molette ou pincement pour zoomer</div>
+  <div class="hint">Glissez pour tourner, molette ou pincement pour zoomer. Faites le tour : l'arrière est ouvert.</div>
   <div class="ov-bar">
     <button id="prev" aria-label="Étape précédente">‹</button>
     <button id="play" class="play" aria-label="Lancer le montage">▶</button>
@@ -116,8 +119,8 @@ textarea{width:100%;min-height:160px;margin-top:10px;font:12px/1.4 ui-monospace,
       <div class="legend" id="legend">
         <span><i class="sw" style="background:#A0A5A9;opacity:.5"></i>niveau du dessous</span>
         <span><svg width="18" height="18" viewBox="0 0 18 18"><rect x="1" y="1" width="16" height="16" rx="2" fill="none" stroke="#888" stroke-dasharray="3 2"/></svg>pièce haute déjà posée</span>
-        <span><svg width="18" height="18" viewBox="0 0 18 18"><rect x="1" y="1" width="16" height="16" rx="2" fill="#6C6E68"/><path d="M5 11h8l-4 5z" fill="#F5C235"/></svg>pente, vers le bas</span>
-        <span><svg width="18" height="18" viewBox="0 0 18 18"><rect x="1" y="1" width="8" height="16" fill="#1F3FA8"/><rect x="9" y="1" width="8" height="16" fill="#C91A09"/></svg>vitrail transparent</span>
+        <span><svg width="18" height="18" viewBox="0 0 18 18"><rect x="1" y="1" width="16" height="16" rx="2" fill="#008F9B"/><path d="M5 11h8l-4 5z" fill="#F5C235"/></svg>pente, vers le bas</span>
+        <span><svg width="18" height="18" viewBox="0 0 18 18"><rect x="1" y="1" width="8" height="16" fill="#AEEFEC"/><rect x="9" y="1" width="8" height="16" fill="#A5A5CB"/></svg>glace et vitrail</span>
       </div>
     </div>
   </div>
@@ -125,27 +128,26 @@ textarea{width:100%;min-height:160px;margin-top:10px;font:12px/1.4 ui-monospace,
   <section>
     <h2>Conseils de montage</h2>
     <div class="tips">
-      <div><b>Trois chantiers par niveau</b>Chaque niveau fait monter ensemble la cathédrale, les deux tours et le cloître. Posez tout le niveau avant de passer au suivant.</div>
-      <div><b>Deux pierres</b>Beige pour la pierre ocre des parties médiévales, blanc pour les flèches ajoutées au XIXe siècle. Beige foncé pour les angles, contreforts et corniches.</div>
-      <div><b>Les pièces hautes</b>Cadre du portail (6 niveaux), arche du portail (2 niveaux) et cônes des flèches (2 niveaux) se posent une seule fois. Aux niveaux suivants, le plan les montre en pointillés.</div>
-      <div><b>Repérage</b>Les chiffres au-dessus du plan numérotent les colonnes de 1 à 32, de gauche à droite en regardant la façade. Le bord avant de la plaque est en bas du plan.</div>
+      <div><b>Une maison de poupée à l'arrière</b>Comme le château en plastique, l'arrière reste ouvert : on voit la grande salle, la chambre violette et la salle haute. Tournez la maquette pour jouer dedans.</div>
+      <div><b>Façade de collection</b>Toits turquoise foncé, flèches de glace et vitraux violets viennent du château de collection. Les nervures blanches dessinent la dentelle de glace.</div>
+      <div><b>Les pièces hautes</b>Porte de glace (6 niveaux), arche du portail (2 niveaux), cônes des tourelles et de la flèche (2 niveaux) se posent une seule fois. Aux niveaux suivants, le plan les montre en pointillés.</div>
+      <div><b>Repérage</b>Les chiffres au-dessus du plan numérotent les colonnes de 1 à 32, de gauche à droite en regardant la porte. Le bord avant de la plaque est en bas du plan.</div>
     </div>
   </section>
 
   <section>
-    <h2>Du monument à la maquette</h2>
-    <p>Le modèle suit le plan en croix de la cathédrale Sainte-Marie. Les hauteurs sont légèrement tassées pour que tout tienne sur une plaque 32x32.</p>
+    <h2>Ce qui vient de chaque modèle</h2>
     <div class="facts">
-      <div><strong>85 m</strong><span>Hauteur des deux flèches, achevées au XIXe siècle par Émile Boeswillwald. Ici 26 niveaux.</span></div>
-      <div><strong>77 m</strong><span>Longueur de la nef, pour 26,5 m sous voûte. Ici 10 niveaux de murs et deux rangs de toiture.</span></div>
-      <div><strong>7</strong><span>Chapelles rayonnantes autour du chœur. Ici sept vitraux sur le mur du déambulatoire, en plan simplifié.</span></div>
-      <div><strong>Sud</strong><span>Le grand cloître gothique des XIIIe et XIVe siècles, sur le flanc sud. Ici à droite de la nef.</span></div>
+      <div><strong>Jouet</strong><span>Dos ouvert, grand balcon avec deux trônes et une table à thé, garde-corps violets, escalier de glace en colimaçon, chambre à droite, grotte d'Olaf.</span></div>
+      <div><strong>Collection</strong><span>Silhouette pyramidale, toits turquoise, deux tourelles à flèche, donjon central à vitrail violet, dentelle blanche.</span></div>
+      <div><strong>Les deux</strong><span>La haute flèche centrale coiffée d'un flocon, et les vitraux qui s'allument la nuit.</span></div>
     </div>
+    <p class="fine">Création de fan inspirée de La Reine des neiges, sans lien avec Disney ni avec le groupe LEGO.</p>
   </section>
 
   <section>
     <h2>Liste complète des pièces</h2>
-    <p>Calculée à partir des plans. Les références sont celles de BrickLink.</p>
+    <p>Calculée à partir des plans. Les références sont celles de BrickLink. Vérifiez la disponibilité des couleurs transparentes et lavande avant de commander.</p>
     <div class="tablewrap"><table id="bom"><thead><tr><th>Couleur</th><th>Pièce</th><th>Réf.</th><th style="text-align:right">Qté</th></tr></thead><tbody></tbody></table></div>
     <button class="btn" id="xmlBtn">Copier la liste BrickLink (XML, +10 %)</button>
     <textarea id="xml" readonly hidden aria-label="Liste BrickLink au format XML"></textarea>
@@ -157,16 +159,14 @@ textarea{width:100%;min-height:160px;margin-top:10px;font:12px/1.4 ui-monospace,
 const NL=26;
 const K=(x,y)=>x+','+y;
 function splitLen(n,stagger,sizes){sizes=sizes||[6,4,3,2,1];const out=[];let r=n;if(stagger&&n>=5){out.push(2);r-=2;}while(r>0){const s=sizes.find(v=>v<=r);out.push(s);r-=s;}return out;}
-// Emprises (coordonnées de la plaque, x de gauche à droite, y du bord avant vers le fond)
-const TOWERS=[{x0:2,x1:6,cx:4,outer:2},{x0:13,x1:17,cx:15,outer:17}];const TY0=3,TY1=7,TCY=5;
-const BUTT=[[2,10],[2,13],[17,10],[17,13]];
-const CA=19,CB=30,CC=5,CD=15;
+const TOW=[{x0:7,x1:9,cx:8},{x0:22,x1:24,cx:23}];
+const SPIRE=[[15,12],[16,12],[15,13],[16,13]];
 const TALL=[
-  {l0:1,h:6,cells:[[8,3],[9,3],[10,3],[11,3]],c:'S',part:'door',kind:'door',out:[0,-1]},
-  {l0:7,h:2,cells:[[7,3],[8,3],[9,3],[10,3],[11,3],[12,3]],c:'Y',part:'arch',kind:'arch',out:[0,-1]}
+  {l0:1,h:6,cells:[[14,6],[15,6],[16,6],[17,6]],c:'W',part:'door',kind:'door',out:[0,-1]},
+  {l0:7,h:2,cells:[[13,6],[14,6],[15,6],[16,6],[17,6],[18,6]],c:'W',part:'arch',kind:'arch',out:[0,-1]},
+  {l0:24,h:2,cells:SPIRE,c:'I',part:'c2',kind:'cone2'}
 ];
-TOWERS.forEach(T=>{const cs=[];for(let x=T.cx-1;x<=T.cx+1;x++)for(let y=TCY-1;y<=TCY+1;y++)cs.push([x,y]);TALL.push({l0:22,h:2,cells:cs,c:'W',part:'c3',kind:'cone3'});});
-const glass=(x,y,l)=>(x+y+l)%2?'Q':'R';
+TOW.forEach(T=>{const cs=[];for(let x=T.x0;x<=T.x1;x++)for(let y=10;y<=12;y++)cs.push([x,y]);TALL.push({l0:20,h:2,cells:cs,c:'E',part:'c3',kind:'cone3'});});
 
 function buildLevel(l){
   const cells=new Map(),groups=[],used=new Set();
@@ -174,7 +174,7 @@ function buildLevel(l){
   const put=(x,y,c,t)=>{if(!cells.has(K(x,y)))force(x,y,c,t);};
   const add=(list,c,part,extra)=>{groups.push(Object.assign({cells:list,c,part,t:'b',kind:'brick',h:1},extra||{}));list.forEach(p=>used.add(K(p[0],p[1])));};
   const spec=(list,c,part,kind,extra)=>{list.forEach(p=>force(p[0],p[1],c,kind));add(list,c,part,Object.assign({kind},extra||{}));};
-  const win=(x,y,c)=>force(x,y,c||glass(x,y,l),'win');
+  const win=(x,y,c)=>force(x,y,c,'win');
   const fill=(x0,x1,y0,y1,c)=>{for(let x=x0;x<=x1;x++)for(let y=y0;y<=y1;y++)put(x,y,c);};
   const ring=(x0,x1,y0,y1,c,cc)=>{for(let x=x0;x<=x1;x++)for(let y=y0;y<=y1;y++)if(x===x0||x===x1||y===y0||y===y1)put(x,y,((x===x0||x===x1)&&(y===y0||y===y1))?cc:c);};
   const pair=(axis,fix,i,n)=>{const cs=[];for(let j=0;j<n;j++){if(axis==='x')cs.push([i+j,fix],[i+j,fix+1]);else cs.push([fix,i+j],[fix+1,i+j]);}return cs;};
@@ -188,87 +188,73 @@ function buildLevel(l){
     if(s.f)slopeRun('x',c,xa,xb,[0,-1],col);if(s.b)slopeRun('x',d-1,xa,xb,[0,1],col);
     if(s.l)slopeRun('y',a,ya,yb,[-1,0],col);if(s.r)slopeRun('y',b-1,ya,yb,[1,0],col);
   };
+  const ALLS={f:1,b:1,l:1,r:1};
   // ---- Pièces hautes
   TALL.forEach(T=>{
     if(l<T.l0||l>=T.l0+T.h)return;
     if(l===T.l0)spec(T.cells,T.c,T.part,T.kind,{h:T.h,out:T.out});
     else T.cells.forEach(p=>{force(p[0],p[1],T.c,'occ');used.add(K(p[0],p[1]));});
   });
-  // ---- Tours et flèches
-  TOWERS.forEach(T=>{
-    const {x0,x1,cx,outer}=T;
-    if(l<=17){
-      if(l>=13&&l<=16){win(cx,TY0,'T');win(cx,TY1,'T');win(x0,TCY,'T');win(x1,TCY,'T');if(l===14||l===15){win(cx-1,TY0,'T');win(cx+1,TY0,'T');}}
-      if([3,4,7,8].includes(l))win(cx,TY0,'T');
-      if(l===5||l===6)win(outer,TCY,'T');
-      ring(x0,x1,TY0,TY1,l===10||l===17?'Y':'S','Y');
-    }else if(l===18)fill(x0,x1,TY0,TY1,'W');
-    else{
-      const cp=[[x0,TY0],[x1,TY0],[x0,TY1],[x1,TY1]];
-      if(l<=22)cp.forEach(p=>spec([p],'W','r','round'));
-      else if(l===23)cp.forEach(p=>spec([p],'W','c1','cone1'));
-      if(l===19)fill(x0,x1,TY0,TY1,'W');
-      if(l===20||l===21)[[cx,TCY-1],[cx,TCY],[cx,TCY+1],[cx-1,TCY],[cx+1,TCY]].forEach(p=>put(p[0],p[1],'W'));
-      if(l===24||l===25)spec([[cx,TCY]],'W','r','round');
-      if(l===26)spec([[cx,TCY]],'W','c1','cone1');
+  // ---- Grotte d'Olaf
+  if(l<=3){for(let x=1;x<=5;x++)put(x,4,(x+l)%2?'W':'I');for(let y=1;y<=3;y++){if(l===3&&y<3)continue;put(1,y,'W');put(5,y,'W');}}
+  if(l===4)fill(2,4,4,4,'W');
+  // ---- Escalier de glace en colimaçon
+  if(l<=8){const o=[[1,0],[0,-1],[-1,0],[0,1]][((l-8)%4+4)%4];spec([[5,6]],'W','r','round');put(5+o[0],6+o[1],'I');}
+  // ---- Grande salle, dos ouvert
+  if(l<=8){
+    for(let x=9;x<=22;x++){if(l>=2&&l<=6&&[11,12,19,20].includes(x))win(x,6,'P');put(x,6,l===8||x===9||x===22?'W':'A');}
+    for(let y=7;y<=16;y++){put(9,y,'A');put(22,y,'A');}
+    if(l<=4)fill(11,12,15,15,'M');
+  }
+  // ---- Aile gauche basse, toit turquoise
+  if(l<=4)for(let x=3;x<=8;x++)for(let y=8;y<=14;y++){
+    if(!(x===3||x===8||y===8||y===14))continue;
+    if(l>=2&&l<=3&&y===8&&(x===5||x===6))win(x,y,'P');
+    put(x,y,(x===3||x===8)&&(y===8||y===14)?'W':'A');
+  }
+  if(l===5){hip(3,8,8,14,ALLS,'E');fill(5,6,10,12,'E');}
+  if(l===6)ridgeRun('y',5,10,12,'E');
+  // ---- Aile droite haute, la chambre
+  if(l<=8){
+    for(let x=23;x<=28;x++){if(l>=3&&l<=6&&(x===25||x===26))win(x,8,'P');put(x,8,x===28||l===8?'W':'A');}
+    for(let y=9;y<=16;y++){if(l>=3&&l<=6&&y>=11&&y<=13)win(28,y,'I');put(28,y,l===8?'W':'A');}
+    if(l===1)fill(24,26,12,15,'M');
+    if(l===2)fill(24,26,15,15,'L');
+  }
+  // ---- Plancher du balcon
+  if(l===9)fill(7,28,5,16,'A');
+  // ---- Balcon : garde-corps, trônes, table à thé
+  if(l===10){
+    for(let x=8;x<=24;x+=4)spec([[x,5],[x+1,5],[x+2,5],[x+3,5]],'M','fence','fence',{axis:'x'});
+    for(let y=6;y<=10;y+=4)spec([[28,y],[28,y+1],[28,y+2],[28,y+3]],'M','fence','fence',{axis:'y'});
+    [[7,5],[28,5],[28,16]].forEach(p=>spec([p],'M','r','round'));
+    fill(11,12,6,7,'M');fill(19,20,6,7,'M');fill(15,16,6,7,'M');
+  }
+  if(l===11||l===12){fill(11,12,7,7,'M');fill(19,20,7,7,'M');}
+  if(l===13)[[11,7],[12,7],[19,7],[20,7]].forEach(p=>spec([p],'L','r','round'));
+  // ---- Salle haute, dos ouvert
+  if(l>=10&&l<=17){
+    for(let x=10;x<=21;x++){
+      if(l>=11&&l<=16&&x>=14&&x<=17)win(x,9,'P');
+      if((l===13||l===14)&&[11,12,19,20].includes(x))win(x,9,'P');
+      put(x,9,l===17||[10,13,18,21].includes(x)?'W':'A');
     }
+    for(let y=10;y<=16;y++){put(10,y,'A');put(21,y,'A');}
+  }
+  // ---- Tourelles
+  TOW.forEach(({x0,x1,cx})=>{
+    if(l>=10&&l<=18){if([12,13,16,17].includes(l))win(cx,10,'P');ring(x0,x1,10,12,l===18?'W':'A','W');}
+    if(l===19)fill(x0,x1,10,12,'W');
+    if(l>=22&&l<=24)spec([[cx,11]],'I','r','round');
+    if(l===25)spec([[cx,11]],'I','c1','cone1');
   });
-  // ---- Façade entre les tours
-  if(l<=6){put(7,3,'S');put(12,3,'S');}
-  if(l===9||l===10){win(9,3);win(10,3);const c=l===10?'Y':'S';[7,8,11,12].forEach(x=>put(x,3,c));}
-  if(l===11)fill(7,12,3,3,'S');
-  if(l===12)fill(8,11,3,3,'S');
-  if(l===13)fill(9,10,3,3,'Y');
-  // ---- Grands murs : nef, chœur, transept
-  if(l<=10){
-    const hc=l===10?'Y':'S',clere=l===8||l===9;
-    for(let y=4;y<=26;y++)[7,12].forEach(x=>{if(clere&&[8,9,11,12,14,15,23,24].includes(y))win(x,y);put(x,y,y===26?'Y':hc);});
-    for(let x=8;x<=11;x++){if(clere&&(x===9||x===10))win(x,26);put(x,26,hc);}
-    [[1,6,1,[3,4]],[13,18,18,[15,16]]].forEach(([a,b,end,wx])=>{
-      for(let y=16;y<=21;y++){if(l>=3&&l<=9&&(y===18||y===19))win(end,y);put(end,y,y===16||y===21?'Y':hc);}
-      for(let x=a;x<=b;x++)[16,21].forEach(y=>{if(clere&&wx.includes(x))win(x,y);put(x,y,hc);});
-    });
-  }
-  // ---- Bas-côtés et déambulatoire
-  if(l<=5){
-    const aw=l>=2&&l<=4;
-    [3,16].forEach(x=>{
-      for(let y=8;y<=15;y++){if(aw&&[8,9,11,12,14,15].includes(y))win(x,y);put(x,y,'S');}
-      for(let y=22;y<=30;y++){if(aw&&(y===24||y===27))win(x,y);put(x,y,y===30?'Y':'S');}
-    });
-    for(let x=4;x<=15;x++){if(aw&&[6,9,10,13].includes(x))win(x,30);put(x,30,'S');}
-  }
-  // ---- Contreforts et arcs-boutants
-  BUTT.forEach(([x,y])=>{if(l<=6)put(x,y,'Y');else if(l===7)spec([[x,y]],'Y','r','round');else if(l===8)spec([[x,y]],'Y','c1','cone1');});
-  if(l===8)[10,13].forEach(y=>{spec([[3,y],[4,y],[5,y],[6,y]],'Y','fly','fly',{out:[-1,0]});spec([[13,y],[14,y],[15,y],[16,y]],'Y','fly','fly',{out:[1,0]});});
-  // ---- Toitures basses
-  if(l===6){
-    hip(3,6,8,15,{l:1},'D');fill(5,6,8,15,'D');
-    hip(13,16,8,15,{r:1},'D');fill(13,14,8,15,'D');
-    hip(3,16,22,30,{b:1,l:1,r:1},'D');fill(5,6,22,28,'D');fill(13,14,22,28,'D');fill(7,12,27,28,'D');
-  }
-  if(l===7){slopeRun('y',5,8,15,[-1,0],'D');slopeRun('y',13,8,15,[1,0],'D');hip(5,14,22,28,{b:1,l:1,r:1},'D');}
-  // ---- Grandes toitures
-  if(l===11){
-    hip(7,12,4,26,{b:1,l:1,r:1},'D');fill(9,10,4,24,'D');
-    hip(1,6,16,21,{f:1,b:1},'D');fill(1,6,18,19,'D');
-    hip(13,18,16,21,{f:1,b:1},'D');fill(13,18,18,19,'D');
-  }
-  if(l===12){ridgeRun('y',9,4,24,'D');ridgeRun('x',18,1,6,'D');ridgeRun('x',18,13,18,'D');}
-  // ---- Cloître
-  if(l<=3){
-    for(let x=CA;x<=CB;x++)for(let y=CC;y<=CD;y++){
-      if(!(x===CA||x===CB||y===CC||y===CD))continue;
-      if(l<=2&&y===CC&&(x===24||x===25))continue;
-      put(x,y,(x===CA||x===CB)&&(y===CC||y===CD)?'Y':'S');
-    }
-    for(let x=CA+1;x<=CB-1;x++)for(let y=CC+1;y<=CD-1;y++){
-      if(!(x===CA+1||x===CB-1||y===CC+1||y===CD-1))continue;
-      if(l===3)put(x,y,'S');
-      else if((x+y)%2===0||((x===CA+1||x===CB-1)&&(y===CC+1||y===CD-1)))spec([[x,y]],'S','r','round');
-    }
-  }
-  if(l===4)hip(CA,CB,CC,CD,{f:1,b:1,l:1,r:1},'D');
+  // ---- Toit de la salle haute
+  if(l===18){hip(10,21,9,16,ALLS,'E');fill(12,19,11,14,'E');}
+  // ---- Donjon et flèche
+  if(l>=19&&l<=21){win(15,11,'P');win(16,11,'P');ring(13,18,11,14,'A','W');}
+  if(l===22){slopeRun('y',13,11,14,[-1,0],'E');slopeRun('y',17,11,14,[1,0],'E');fill(15,16,11,14,'W');}
+  if(l===23)spec(SPIRE,'I','b22r','round2');
+  if(l===26)spec(SPIRE,'I','c1','cone1');
   // ---- Regroupement automatique en briques 1xN
   cells.forEach(cl=>{if(cl.t==='win'&&!used.has(K(cl.x,cl.y)))add([[cl.x,cl.y]],cl.c,'1x1',{t:'win'});});
   const free=(x,y,c)=>{const cl=cells.get(K(x,y));return !!cl&&cl.t==='b'&&cl.c===c&&!used.has(K(x,y));};
@@ -291,87 +277,78 @@ const LV=[];for(let l=1;l<=NL;l++)LV.push(buildLevel(l));
 // MODEL END
 // ================= Catalogue
 const COL={
-  S:{n:'Beige (Tan)',hex:'#E4CD9E',bl:2},Y:{n:'Beige foncé',hex:'#958A73',bl:69},W:{n:'Blanc',hex:'#F2F2F0',bl:1},
-  D:{n:'Gris foncé',hex:'#6C6E68',bl:85},Q:{n:'Bleu foncé transparent',hex:'#1F3FA8',bl:14},R:{n:'Rouge transparent',hex:'#C91A09',bl:17},
-  T:{n:'Noir transparent',hex:'#3B3F46',bl:13},N:{n:'Brun rougeâtre',hex:'#582A12',bl:88},K:{n:'Noir',hex:'#1B1B1B',bl:11},
-  V:{n:'Vert',hex:'#237841',bl:6},Z:{n:'Jaune transparent',hex:'#F5CD2F',bl:19}
+  W:{n:'Blanc',hex:'#F2F2F0',bl:1},A:{n:'Azur moyen',hex:'#36AEBF',bl:156},E:{n:'Turquoise foncé',hex:'#008F9B',bl:39},
+  I:{n:'Bleu clair transparent',hex:'#AEEFEC',bl:15},P:{n:'Violet transparent',hex:'#A5A5CB',bl:51},
+  M:{n:'Lavande moyen',hex:'#AC78BA',bl:157},L:{n:'Lavande',hex:'#E1D5ED',bl:154},O:{n:'Orange',hex:'#FE8A18',bl:4},K:{n:'Noir',hex:'#1B1B1B',bl:11}
 };
-const COLORDER='SYWDQRTNKVZ';
+const COLORDER='WAEIPMLOK';
 const CAT={
   '1x1':['3005','Brique 1x1'],'1x2':['3004','Brique 1x2'],'1x3':['3622','Brique 1x3'],'1x4':['3010','Brique 1x4'],'1x6':['3009','Brique 1x6'],
-  'r':['3062b','Brique ronde 1x1'],'c1':['4589','Cône 1x1'],'c3':['6233','Cône 3x3x2'],
-  'door':['60596','Cadre de porte 1x4x6'],'doorp':['60616','Porte 1x4x6'],'arch':['15254','Arche 1x6x2'],'fly':['61678','Pente incurvée 4x1'],
+  'r':['3062b','Brique ronde 1x1'],'b22r':['3941','Brique ronde 2x2'],'c1':['4589','Cône 1x1'],'c2':['3942c','Cône 2x2x2'],'c3':['6233','Cône 3x3x2'],
+  'door':['60596','Cadre de porte 1x4x6'],'glassdoor':['60616','Porte 1x4x6'],'arch':['15254','Arche 1x6x2'],'fence':['3633','Barrière 1x4x1'],
   '3039':['3039','Pente 45° 2x2'],'3040':['3040','Pente 45° 2x1'],'3045':['3045','Pente 45° 2x2 double convexe'],'3043':['3043','Faîtière 45° 2x2'],'3044':['3044c','Faîtière 45° 2x1'],
-  'ant':['3957a','Antenne 1x4'],'plant':['2417','Feuillage 6x5'],'b22r':['3941','Brique ronde 2x2'],'tr2':['14769','Tuile ronde 2x2'],
-  'bp':['3811','Plaque de base 32x32'],'t24':['87079','Tuile 2x4'],'bar4':['30374','Barre 4L'],'pr1':['4073','Plaque ronde 1x1']
+  'ant':['3957a','Antenne 1x4'],'tr2':['14769','Tuile ronde 2x2 + autocollant'],'tr1':['98138','Tuile ronde 1x1'],'bp':['3811','Plaque de base 32x32'],'t22':['3068b','Tuile 2x2']
 };
-const TREES=[[22,20],[28,25],[23,28]];
-const LAMPS=[[1,2],[18,2],[20,2],[30,2]];
+const CRYSTALS=[[1,9],[2,15],[0,20],[30,3],[31,8],[26,2],[8,1],[22,1]];
+const DRIFTS=[[2,24,1],[6,28,0],[28,22,1],[25,28,0],[12,26,1],[19,27,0]];
 const EXTRA={
-  base:[['bp','V',1]],
-  deco:[['ant','W',2],['b22r','Y',1],['tr2','D',1],['plant','V',2]],
-  socle:[['t24','S',8],['r','K',4],['bar4','K',4],['pr1','Z',4],['plant','V',3]]
+  base:[['bp','W',1]],
+  deco:[['ant','I',1],['tr2','I',1],['r','W',3],['c1','O',1],['tr1','L',2]],
+  socle:[['t22','I',4],['c1','I',CRYSTALS.length],['3039','W',DRIFTS.length]]
 };
-function tally(groups){const m={};const inc=(k,q)=>{m[k]=(m[k]||0)+q;};groups.forEach(g=>{inc(g.part+'|'+g.c,1);if(g.part==='door')inc('doorp|N',1);});return m;}
+function tally(groups){const m={};const inc=(k,q)=>{m[k]=(m[k]||0)+q;};groups.forEach(g=>{inc(g.part+'|'+g.c,1);if(g.part==='door')inc('glassdoor|I',1);});return m;}
 function addList(m,list){list.forEach(([p,c,q])=>{const k=p+'|'+c;m[k]=(m[k]||0)+q;});return m;}
 const sortParts=(a,b)=>{const[pa,ca]=a[0].split('|'),[pb,cb]=b[0].split('|');return COLORDER.indexOf(ca)-COLORDER.indexOf(cb)||CAT[pa][0].localeCompare(CAT[pb][0]);};
-const isRound=p=>p==='r'||p==='c1'||p==='c3'||p==='b22r'||p==='tr2'||p==='pr1';
+const isRound=p=>['r','b22r','c1','c2','c3','tr1','tr2'].includes(p);
 
 const STEPS=[{k:'base'}];for(let l=1;l<=NL;l++)STEPS.push({k:'lvl',l});STEPS.push({k:'deco'},{k:'socle'});
 const LAST=STEPS.length-1;
 
 // ================= Textes
-const TITLE=l=>l===1?'Fondations et portail':l<=5?'Murs et vitraux':l<=7?'Toitures basses':l<=10?'Arcs-boutants et fenêtres hautes':l<=12?'Grandes toitures en ardoise':l<=16?'Beffrois des tours':l===17?'Corniche des tours':l===18?'Plateforme des flèches':l<=21?'Pinacles et base des flèches':l<=23?'Cônes des flèches':'Pointe des flèches';
+const TITLE=l=>l===1?"Fondations, grotte d'Olaf et chambre":l<=4?'Rez-de-chaussée':l<=6?"Toit de l'aile gauche":l<=8?'Arche de la porte de glace':l===9?'Plancher du balcon':l===10?'Balcon, trônes et garde-corps':l<=17?'Salle haute et tourelles':l===18?'Toit de la salle haute':l<=21?'Donjon et cônes des tourelles':l===22?'Pignons du donjon':l===23?'Base de la flèche':l<=25?'Cône de glace et pointes des tourelles':'Pointe de la flèche';
 function levelNotes(l){
   const t=[];
   if(l===1){
     t.push("Posez ce premier rang directement sur la plaque, sur les emplacements repérés à l'étape 0.");
-    t.push("Portail : le cadre de porte 1x4x6 se pose dès maintenant au centre de la façade, porte brune fermée. Il occupe six niveaux.");
-    t.push("Tours : deux carrés de 5x5, angles en beige foncé, ce sont les contreforts.");
-    t.push("Contreforts des bas-côtés : quatre piles beige foncé, colonnes 3 et 18.");
+    t.push("Porte de glace : le cadre de porte 1x4x6 blanc avec sa porte bleu clair transparent se pose dès maintenant. Il occupe six niveaux.");
+    t.push("Grande salle : le mur de façade et les deux murs latéraux. L'arrière reste ouvert, comme une maison de poupée.");
+    t.push("Chambre, à droite : un lit lavande de 3x4 tenons contre le fond. Armoire lavande dans la grande salle, à gauche.");
+    t.push("Grotte d'Olaf, devant à gauche : un U de briques blanches et de glace, ouvert vers l'avant.");
   }
-  if(l===2)t.push("Vitraux : briques 1x1 transparentes, bleu foncé et rouge en damier. Elles s'allument en mode nuit.");
-  if(l>=2&&l<=4)t.push("Bas-côtés : trois paires de vitraux de chaque côté, entre les contreforts.");
-  if(l===2)t.push("Déambulatoire : sept vitraux, un par chapelle rayonnante, deux sur chaque flanc et trois au chevet.");
-  if(l===3)t.push("Transept : les grandes verrières des deux pignons commencent. Elles montent sur sept niveaux.");
-  if([3,4,7,8].includes(l))t.push("Tours : une baie noir transparent au centre de la face avant.");
-  if(l===5||l===6)t.push("Tours : une baie sur la face extérieure.");
-  if(l<=2)t.push("Cloître : mur extérieur beige avec une entrée de deux tenons côté parvis, colonnettes rondes une sur deux côté jardin.");
-  if(l===3)t.push("Cloître : linteau continu, les briques font pont d'une colonnette à l'autre.");
-  if(l===4)t.push("Cloître : toiture en ardoise, un anneau de pentes 2x2 et une pente double convexe à chaque angle.");
-  if(l===5)t.push("Bas-côtés et déambulatoire : dernier rang de murs.");
-  if(l===6){t.push("Toitures basses : première rangée de pentes en ardoise sur les bas-côtés et le déambulatoire. Au chevet, une pente double convexe à chaque angle.");t.push("Derrière les pentes, un rang de briques gris foncé porte la rangée suivante.");}
-  if(l===7){t.push("Toitures basses : deuxième rangée, adossée aux murs de la nef et du chœur.");t.push("Portail : l'arche 1x6x2 beige foncé coiffe le cadre de porte. Elle occupe deux niveaux.");t.push("Contreforts : une brique ronde au sommet de chaque pile.");}
-  if(l===8){t.push("Arcs-boutants : quatre pentes incurvées 4x1. Le côté haut se clipse sur le tenon de la toiture basse, contre la nef. Le côté bas vient au-dessus de la pile.");t.push("Contreforts : un cône 1x1 en pinacle.");t.push("Fenêtres hautes : vitraux dans la nef, le chœur et les bras du transept.");}
-  if(l===9)t.push("Façade : la grande verrière au-dessus du portail, deux vitraux côte à côte.");
-  if(l===10)t.push("Corniche : tout le rang supérieur des grands murs passe en beige foncé. Même chose pour la ceinture des tours.");
-  if(l===11){t.push("Grands toits : pentes 2x2 en ardoise sur la nef, le chœur et les deux bras du transept. Le chevet se ferme par deux pentes doubles convexes.");t.push("Pignon de façade : un rang plein devant le toit.");}
-  if(l===12){t.push("Faîtage : faîtières 2x2 sur la nef, qui traversent le transept, et sur chaque bras du transept.");t.push("Pignon : il se resserre d'un tenon de chaque côté.");}
-  if(l===13){t.push("Pignon : sommet en beige foncé.");t.push("Tours : les beffrois s'ouvrent. Une baie noir transparent au centre de chaque face.");}
-  if(l===14||l===15)t.push("Tours : beffrois, baie élargie à trois tenons en façade.");
-  if(l===16)t.push("Tours : dernier rang des beffrois.");
-  if(l===17)t.push("Tours : corniche, tout le rang en beige foncé.");
-  if(l===18)t.push("Flèches : plateforme pleine en blanc. Les flèches datent du XIXe siècle, d'où la pierre plus claire.");
-  if(l===19)t.push("Flèches : une brique ronde blanche à chaque angle, ce sont les pinacles. Le reste de la plateforme est plein.");
-  if(l===20)t.push("Flèches : la base devient octogonale, une croix de cinq tenons au centre.");
-  if(l===21)t.push("Flèches : deuxième rang octogonal, les pinacles continuent.");
-  if(l===22)t.push("Flèches : un cône 3x3x2 blanc sur chaque croix. Il occupe deux niveaux. Les pinacles gagnent une dernière brique ronde.");
-  if(l===23)t.push("Pinacles : un cône 1x1 sur chaque angle. Le grand cône occupe déjà le centre.");
-  if(l===24)t.push("Flèches : une brique ronde 1x1 au sommet du cône. Une barre 4L glissée dans le trou du cône aide à la centrer.");
-  if(l===25)t.push("Flèches : une deuxième brique ronde.");
-  if(l===26)t.push("Flèches : cône 1x1 final. La croix se pose à l'étape suivante.");
+  if(l<=8)t.push("Escalier de glace : une brique ronde blanche pour le noyau, et une marche bleu clair transparent qui tourne d'un quart de tour à chaque niveau.");
+  if(l===2){t.push("Vitraux violets transparents de part et d'autre de la porte. Ils s'allument en mode nuit.");t.push("Chambre : l'oreiller lavande au fond du lit.");}
+  if(l===3)t.push("Chambre : fenêtres violettes en façade et fenêtre de glace sur le côté droit.");
+  if(l===4)t.push("Aile gauche : dernier rang de murs. La grotte d'Olaf se ferme en haut.");
+  if(l===5)t.push("Aile gauche : toit en croupe turquoise foncé, pentes 2x2 et une pente double convexe à chaque angle.");
+  if(l===6)t.push("Aile gauche : faîtières turquoise au centre.");
+  if(l===7)t.push("Portail : l'arche blanche 1x6x2 coiffe la porte de glace. Elle occupe deux niveaux.");
+  if(l===8)t.push("Corniche blanche : tout le dernier rang de la grande salle et de la chambre.");
+  if(l===9)t.push("Plancher du balcon : un rang plein en azur moyen, de la colonne 8 à la colonne 29. Il déborde d'un tenon en façade et de deux à gauche, au-dessus de l'escalier.");
+  if(l===10){t.push("Garde-corps : cinq barrières 1x4 lavande le long du bord avant, deux sur le côté droit, et une brique ronde lavande aux angles.");t.push("Deux trônes lavande et, au milieu, la table à thé.");t.push("Salle haute et tourelles : premier rang, l'arrière reste ouvert.");}
+  if(l===11||l===12)t.push("Trônes : le dossier monte d'un rang.");
+  if(l===11)t.push("Salle haute : le grand vitrail violet commence, quatre tenons de large, six niveaux de haut.");
+  if(l===13){t.push("Trônes : une brique ronde lavande à chaque coin du dossier.");t.push("Salle haute : les deux petits vitraux hexagonaux, de part et d'autre du grand.");}
+  if(l===12||l===16)t.push("Tourelles : une fenêtre violette en façade, sur deux niveaux.");
+  if(l===17)t.push("Salle haute : corniche blanche.");
+  if(l===18){t.push("Salle haute : toit en croupe turquoise foncé, un rang plein au centre pour porter le donjon.");t.push("Tourelles : corniche blanche.");}
+  if(l===19){t.push("Donjon : 6x4 tenons, vitrail violet en façade.");t.push("Tourelles : plateforme pleine en blanc.");}
+  if(l===20)t.push("Tourelles : un cône 3x3x2 turquoise foncé sur chaque plateforme. Il occupe deux niveaux.");
+  if(l===22){t.push("Donjon : pentes turquoise à gauche et à droite, pignons blancs devant et derrière.");t.push("Tourelles : une brique ronde de glace sur le cône.");}
+  if(l===23){t.push("Flèche : une brique ronde 2x2 de glace au centre du donjon.");t.push("Tourelles : deuxième brique ronde de glace.");}
+  if(l===24){t.push("Flèche : cône 2x2x2 de glace. Il occupe deux niveaux.");t.push("Tourelles : troisième brique ronde de glace.");}
+  if(l===25)t.push("Tourelles : un cône 1x1 de glace en pointe. Le grand cône de la flèche occupe déjà le centre.");
+  if(l===26)t.push("Flèche : cône 1x1 de glace sur le tenon du grand cône. L'étoile se pose à l'étape suivante.");
   return t;
 }
 
 // ================= Plans 2D
-const PXMIN=0,PXMAX=31,PYMIN=0,PYMAX=31;
 function outwardInner(g){if(!g.out||(g.out[0]===0&&g.out[1]===0))return[];const s=new Set(g.cells.map(p=>p+''));return g.cells.filter(p=>s.has([p[0]+g.out[0],p[1]+g.out[1]]+''));}
 function planSVG(l){
-  const S=14,m=6,top=18,bot=22,NX=PXMAX-PXMIN+1,NY=PYMAX-PYMIN+1,W=NX*S+2*m,H=NY*S+top+bot;
+  const S=14,m=6,top=18,bot=22,N=32,W=N*S+2*m,H=N*S+top+bot;
   const L=LV[l-1],P=l>1?LV[l-2]:null;
-  const px=x=>m+(x-PXMIN)*S,py=y=>top+(PYMAX-y)*S;
+  const px=x=>m+x*S,py=y=>top+(31-y)*S;
   let s=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Plan du niveau ${l}">`;
-  for(let x=PXMIN;x<=PXMAX;x++)for(let y=PYMIN;y<=PYMAX;y++)s+=`<rect x="${px(x)+.5}" y="${py(y)+.5}" width="${S-1}" height="${S-1}" fill="var(--grid)"/>`;
+  for(let x=0;x<N;x++)for(let y=0;y<N;y++)s+=`<rect x="${px(x)+.5}" y="${py(y)+.5}" width="${S-1}" height="${S-1}" fill="var(--grid)"/>`;
   [1,5,10,15,20,25,30].forEach(n=>{s+=`<text x="${px(n-1)+S/2}" y="12" font-size="10" text-anchor="middle" fill="var(--muted)" font-family="DM Sans,sans-serif">${n}</text>`;});
   if(P)P.cells.forEach(c=>{s+=`<rect x="${px(c.x)+1}" y="${py(c.y)+1}" width="${S-2}" height="${S-2}" fill="#A0A5A9" opacity=".5" rx="1"/>`;});
   L.cells.forEach(c=>{if(c.t==='occ')s+=`<rect x="${px(c.x)+1.5}" y="${py(c.y)+1.5}" width="${S-3}" height="${S-3}" fill="none" stroke="#888" stroke-dasharray="3 2" rx="1"/>`;});
@@ -379,44 +356,51 @@ function planSVG(l){
     const xs=g.cells.map(p=>p[0]),ys=g.cells.map(p=>p[1]);
     const xa=Math.min(...xs),xb=Math.max(...xs),ya=Math.min(...ys),yb=Math.max(...ys);
     const fill=COL[g.c].hex,X=px(xa)+1,Y=py(yb)+1,Wd=(xb-xa+1)*S-2,Hd=(yb-ya+1)*S-2,cx=X+Wd/2,cy=Y+Hd/2;
-    const round=g.kind==='round'||g.kind==='cone1'||g.kind==='cone3';
-    if(round){s+=`<circle cx="${cx}" cy="${cy}" r="${Wd/2}" fill="${fill}" stroke="var(--stroke)"/>`;}
+    const round=['round','round2','cone1','cone2','cone3'].includes(g.kind);
+    if(round)s+=`<circle cx="${cx}" cy="${cy}" r="${g.kind==='cone1'&&g.cells.length>1?S*.5:Wd/2}" fill="${fill}" stroke="var(--stroke)"/>`;
+    else if(g.kind==='fence')s+=`<rect x="${g.axis==='x'?X:cx-2}" y="${g.axis==='x'?cy-2:Y}" width="${g.axis==='x'?Wd:4}" height="${g.axis==='x'?4:Hd}" fill="${fill}"/>`;
     else s+=`<rect x="${X}" y="${Y}" width="${Wd}" height="${Hd}" rx="2" fill="${fill}" stroke="var(--stroke)"/>`;
     let studs=g.cells;
     if(g.kind==='slope')studs=outwardInner(g);
-    if(g.kind==='corner'||g.kind==='ridge'||g.kind==='cone1'||g.kind==='cone3')studs=[];
-    if(g.kind==='fly')studs=[g.cells.reduce((a,p)=>(p[0]*-g.out[0]>a[0]*-g.out[0]?p:a))];
-    if(g.kind==='cone1'||g.kind==='cone3')s+=`<circle cx="${cx}" cy="${cy}" r="${g.kind==='cone3'?S*.55:S*.18}" fill="${fill}" stroke="rgba(0,0,0,.35)"/>`;
-    if(g.kind==='door')s+=`<rect x="${X+3}" y="${Y+Hd-5}" width="${Wd-6}" height="3" fill="${COL.N.hex}"/>`;
-    if(g.kind==='arch')s+=`<path d="M${X+S+2} ${Y+Hd}q${(Wd-2*S-4)/2} -${Hd*1.4} ${Wd-2*S-4} 0" fill="none" stroke="#5a4f3c" stroke-width="1.4"/>`;
-    if(g.t==='win')s+=`<path d="M${X+2} ${Y+Hd-2}L${X+Wd-2} ${Y+2}" stroke="rgba(255,255,255,.55)" stroke-width="1.2"/>`;
+    if(['corner','ridge','cone1','cone2','cone3','fence','round2'].includes(g.kind))studs=[];
+    if(g.kind==='cone1'||g.kind==='cone2'||g.kind==='cone3')s+=`<circle cx="${cx}" cy="${cy}" r="${S*.2}" fill="${fill}" stroke="rgba(0,0,0,.35)"/>`;
+    if(g.kind==='door')s+=`<rect x="${X+3}" y="${Y+Hd-5}" width="${Wd-6}" height="3" fill="${COL.I.hex}" stroke="#7aa"/>`;
+    if(g.kind==='arch')s+=`<path d="M${X+S+2} ${Y+Hd}q${(Wd-2*S-4)/2} -${Hd*1.4} ${Wd-2*S-4} 0" fill="none" stroke="#888" stroke-width="1.4"/>`;
+    if(g.t==='win')s+=`<path d="M${X+2} ${Y+Hd-2}L${X+Wd-2} ${Y+2}" stroke="rgba(255,255,255,.7)" stroke-width="1.2"/>`;
     studs.forEach(p=>{s+=`<circle cx="${px(p[0])+S/2}" cy="${py(p[1])+S/2}" r="${S*.26}" fill="${fill}" stroke="rgba(0,0,0,.3)" stroke-width=".8"/>`;});
-    if(g.kind==='slope'||g.kind==='corner'||g.kind==='fly'){
+    if(g.kind==='slope'||g.kind==='corner'){
       const ox=g.out[0],oy=-g.out[1],ax=cx+ox*(Wd/2-4),ay=cy+oy*(Hd/2-4),bx=cx-ox*3,by=cy-oy*3;
       s+=`<line x1="${bx}" y1="${by}" x2="${ax}" y2="${ay}" stroke="#F5C235" stroke-width="2.4" stroke-linecap="round"/><circle cx="${ax}" cy="${ay}" r="2.6" fill="#F5C235"/>`;
     }
     if(g.kind==='ridge'){if(g.axis==='y')s+=`<line x1="${cx}" y1="${Y+2}" x2="${cx}" y2="${Y+Hd-2}" stroke="#F5C235" stroke-width="2"/>`;else s+=`<line x1="${X+2}" y1="${cy}" x2="${X+Wd-2}" y2="${cy}" stroke="#F5C235" stroke-width="2"/>`;}
   });
-  s+=`<text x="${W/2}" y="${H-5}" font-size="11" text-anchor="middle" fill="var(--muted)" font-family="DM Sans,sans-serif">▼ façade ouest et parvis, bord avant de la plaque</text></svg>`;
+  s+=`<text x="${W/2}" y="${H-5}" font-size="11" text-anchor="middle" fill="var(--muted)" font-family="DM Sans,sans-serif">▼ porte de glace, bord avant de la plaque</text></svg>`;
   return s;
 }
 function baseSVG(full){
   const S=10,W=32*S,H=32*S,X=x=>x*S,R=r=>(31-r)*S;
   let s=`<svg viewBox="0 0 ${W} ${H+16}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Plaque de base">`;
-  s+=`<rect width="${W}" height="${H}" fill="#237841" rx="3"/>`;
-  for(let x=0;x<32;x++)for(let r=0;r<32;r++)s+=`<circle cx="${X(x)+S/2}" cy="${R(r)+S/2}" r="3" fill="#2E8B4E"/>`;
-  LV[0].cells.forEach(c=>{s+=`<rect x="${X(c.x)+.5}" y="${R(c.y)+.5}" width="${S-1}" height="${S-1}" fill="${full?COL[c.c].hex:'#F5C235'}"/>`;});
+  s+=`<rect width="${W}" height="${H}" fill="#E9EEF2" rx="3"/>`;
+  for(let x=0;x<32;x++)for(let r=0;r<32;r++)s+=`<circle cx="${X(x)+S/2}" cy="${R(r)+S/2}" r="3" fill="#D5DDE3"/>`;
+  LV[0].cells.forEach(c=>{s+=`<rect x="${X(c.x)+.5}" y="${R(c.y)+.5}" width="${S-1}" height="${S-1}" fill="${full?COL[c.c].hex:'#F5C235'}" stroke="${full?'#8aa':'none'}" stroke-width=".5"/>`;});
   if(full){
-    for(let x=0;x<32;x+=4)s+=`<rect x="${X(x)+.5}" y="${R(1)+.5}" width="${4*S-1}" height="${2*S-1}" fill="${COL.S.hex}" stroke="#b9a57c" rx="1"/>`;
-    LAMPS.forEach(([x,r])=>{s+=`<circle cx="${X(x)+S/2}" cy="${R(r)+S/2}" r="${S*.45}" fill="#1B1B1B"/><circle cx="${X(x)+S/2}" cy="${R(r)+S/2}" r="${S*.22}" fill="#F5CD2F"/>`;});
-    TREES.forEach(([x,r])=>{s+=`<circle cx="${X(x)+S/2}" cy="${R(r)+S/2}" r="${S*2.2}" fill="#2f9a53" stroke="#1b5e33"/>`;});
-    s+=`<circle cx="${X(24.5)+S/2}" cy="${R(10)+S/2}" r="${S}" fill="${COL.Y.hex}" stroke="#555"/>`;
+    [[14,0],[16,0],[14,2],[16,2]].forEach(([x,y])=>{s+=`<rect x="${X(x)+.5}" y="${R(y+1)+.5}" width="${2*S-1}" height="${2*S-1}" fill="${COL.I.hex}" stroke="#7ab" rx="1"/>`;});
+    CRYSTALS.forEach(([x,r])=>{s+=`<circle cx="${X(x)+S/2}" cy="${R(r)+S/2}" r="${S*.45}" fill="${COL.I.hex}" stroke="#7ab"/>`;});
+    DRIFTS.forEach(([x,r])=>{s+=`<rect x="${X(x)}" y="${R(r+1)}" width="${2*S}" height="${2*S}" fill="#fff" stroke="#bcc" rx="2"/>`;});
+    s+=`<circle cx="${X(3)+S/2}" cy="${R(2)+S/2}" r="${S*.45}" fill="#fff" stroke="#888"/>`;
   }
-  s+=`<text x="${W/2}" y="${H+13}" font-size="11" text-anchor="middle" fill="var(--muted)" font-family="DM Sans,sans-serif">▼ bord avant de la plaque, côté parvis</text></svg>`;
+  s+=`<text x="${W/2}" y="${H+13}" font-size="11" text-anchor="middle" fill="var(--muted)" font-family="DM Sans,sans-serif">▼ bord avant de la plaque, côté porte</text></svg>`;
   return s;
 }
 function chips(m){
   return Object.entries(m).sort(sortParts).map(([k,q])=>{const[p,c]=k.split('|');return `<span class="chip"><i class="sw${isRound(p)?' round':''}" style="background:${COL[c].hex}"></i><b>${q}×</b> ${CAT[p][1]}</span>`;}).join('');
+}
+function flakeCanvas(size,bg){
+  const cv=document.createElement('canvas');cv.width=cv.height=size;const g=cv.getContext('2d');
+  if(bg){g.fillStyle=bg;g.fillRect(0,0,size,size);}
+  g.translate(size/2,size/2);g.strokeStyle='#ffffff';g.lineCap='round';g.lineWidth=size/28;
+  for(let i=0;i<6;i++){g.rotate(Math.PI/3);g.beginPath();g.moveTo(0,0);g.lineTo(0,-size*.42);for(const k of [.18,.3]){g.moveTo(0,-size*k);g.lineTo(size*.08,-size*(k+.08));g.moveTo(0,-size*k);g.lineTo(-size*.08,-size*(k+.08));}g.stroke();}
+  return cv;
 }
 
 // ================= 3D
@@ -431,21 +415,19 @@ function init3D(){
   renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.NoToneMapping;
   const scene=new THREE.Scene();
   const camera=new THREE.PerspectiveCamera(34,1,.5,600);
-  const hemi=new THREE.HemisphereLight(0xeef5ff,0x6b6552,.62);scene.add(hemi);
-  const sun=new THREE.DirectionalLight(0xfff1dc,1.05);sun.position.set(-28,52,34);sun.castShadow=true;
+  const hemi=new THREE.HemisphereLight(0xeef8ff,0x9fb4c4,.7);scene.add(hemi);
+  const sun=new THREE.DirectionalLight(0xfff6ea,1);sun.position.set(-28,52,34);sun.castShadow=true;
   sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-36,right:36,top:40,bottom:-36,near:1,far:150});sun.shadow.bias=-.0006;sun.shadow.normalBias=.02;
   scene.add(sun);
   const lin=h=>new THREE.Color(h).convertSRGBToLinear();
-  const GL={Q:['#1F3FA8','#5b86ff'],R:['#C91A09','#ff6a3d'],T:['#20252f','#ffb24a'],Z:['#F5CD2F','#ffe27a']};
+  const GL={I:['#AEEFEC','#bff6ff',.62],P:['#A5A5CB','#c79bff',.7]};
   const MAT={};const glowMats=[];
   function mat(c){
-    if(MAT[c])return MAT[c];
-    let m;
-    if(GL[c]){m=new THREE.MeshStandardMaterial({color:lin(GL[c][0]),roughness:.08,transparent:true,opacity:c==='T'?.82:.72,emissive:lin(GL[c][1]),emissiveIntensity:0});glowMats.push(m);}
-    else m=new THREE.MeshStandardMaterial({color:lin(COL[c].hex),roughness:c==='D'?.5:.36,metalness:0});
+    if(MAT[c])return MAT[c];let m;
+    if(GL[c]){m=new THREE.MeshStandardMaterial({color:lin(GL[c][0]),roughness:.06,transparent:true,opacity:GL[c][2],emissive:lin(GL[c][1]),emissiveIntensity:0});glowMats.push(m);}
+    else m=new THREE.MeshStandardMaterial({color:lin(COL[c].hex),roughness:c==='E'?.4:.3,metalness:0});
     return MAT[c]=m;
   }
-  // géométries
   const nonIdx=g=>g.index?g.toNonIndexed():g;
   function merge(list){
     list=list.map(nonIdx);let n=0;list.forEach(g=>n+=g.attributes.position.count);
@@ -455,6 +437,7 @@ function init3D(){
   }
   const box=(w,h,d,x,y,z)=>{const g=new THREE.BoxGeometry(w,h,d);g.translate(x,y,z);return g;};
   const stud=(x,y,z)=>{const g=new THREE.CylinderGeometry(.3,.3,.18,16);g.translate(x,y+.09,z);return g;};
+  const cylG=(rt,rb,h,y,seg)=>{const g=new THREE.CylinderGeometry(rt,rb,h,seg||24);g.translate(0,y,0);return g;};
   function poly(faces){
     const all=[].concat(...faces),c=[0,1,2].map(i=>all.reduce((a,p)=>a+p[i],0)/all.length),pos=[];
     faces.forEach(f=>{
@@ -480,19 +463,20 @@ function init3D(){
     return GEO.c=poly([[b1,b2,b3,b4],[b1,b2,l2,t2,t1],[b1,t1,t4,l4,b4],[b2,b3,l3,l2],[b4,b3,l3,l4],[l2,l3,t3,t2],[l4,l3,t3,t4],[t1,t2,t3,t4]]);}
   function brickGeo(w,d,h,studs){const k='b'+w+'x'+d+'x'+h+':'+studs.join(';');if(GEO[k])return GEO[k];
     return GEO[k]=merge([box(w-.04,h*BH-.02,d-.04,0,h*BH/2,0)].concat(studs.map(s=>stud(s[0],h*BH,s[1]))));}
-  function roundGeo(){if(GEO.rd)return GEO.rd;const g=new THREE.CylinderGeometry(.47,.47,BH-.02,24);g.translate(0,BH/2,0);return GEO.rd=merge([g,stud(0,BH,0)]);}
-  function cone1Geo(){if(GEO.c1)return GEO.c1;const g=new THREE.CylinderGeometry(.16,.47,BH-.02,24);g.translate(0,BH/2,0);return GEO.c1=g;}
-  function cone3Geo(){if(GEO.c3)return GEO.c3;const g=new THREE.CylinderGeometry(.62,1.47,2*BH-.02,32);g.translate(0,BH,0);return GEO.c3=g;}
+  const roundGeo=()=>GEO.rd||(GEO.rd=merge([cylG(.47,.47,BH-.02,BH/2),stud(0,BH,0)]));
+  const round2Geo=()=>GEO.r2||(GEO.r2=merge([cylG(.97,.97,BH-.02,BH/2,32),stud(-.5,BH,-.5),stud(.5,BH,-.5),stud(-.5,BH,.5),stud(.5,BH,.5)]));
+  const cone1Geo=()=>GEO.c1||(GEO.c1=cylG(.16,.47,BH-.02,BH/2));
+  const cone2Geo=()=>GEO.c2||(GEO.c2=merge([cylG(.4,.97,2*BH-.02,BH,32),stud(0,2*BH,0)]));
+  const cone3Geo=()=>GEO.c3||(GEO.c3=cylG(.62,1.47,2*BH-.02,BH,32));
   function archGeo(){if(GEO.ar)return GEO.ar;const s=new THREE.Shape(),H=2*BH-.02,hw=2.98;
     s.moveTo(-hw,0);s.lineTo(-2,0);s.lineTo(-2,1);s.quadraticCurveTo(-1.9,1.9,0,2.05);s.quadraticCurveTo(1.9,1.9,2,1);s.lineTo(2,0);s.lineTo(hw,0);s.lineTo(hw,H);s.lineTo(-hw,H);s.lineTo(-hw,0);
     const g=new THREE.ExtrudeGeometry(s,{depth:.96,bevelEnabled:false,curveSegments:10});g.translate(0,0,-.48);
     const parts=[g];for(let i=0;i<6;i++)parts.push(stud(-2.5+i,H,0));return GEO.ar=merge(parts);}
-  function flyGeo(){if(GEO.fl)return GEO.fl;const s=new THREE.Shape(),H=BH-.02;
-    s.moveTo(-1.98,0);s.lineTo(1.98,0);s.lineTo(1.98,H);s.lineTo(1,H);s.quadraticCurveTo(-.9,H,-1.98,.3);s.lineTo(-1.98,0);
-    const g=new THREE.ExtrudeGeometry(s,{depth:.94,bevelEnabled:false,curveSegments:12});g.translate(0,0,-.47);
-    return GEO.fl=merge([g,stud(1.5,H,0)]);}
+  function fenceGeo(){if(GEO.fe)return GEO.fe;const parts=[box(3.96,.3,.5,0,.15,0),box(3.96,.18,.3,0,BH-.09,0)];for(let i=0;i<7;i++)parts.push(box(.14,BH-.3,.14,-1.71+i*.57,.3+(BH-.3)/2-.05,0));return GEO.fe=merge(parts);}
   const RAD=(ox,oy,cx,cz)=>Math.atan2(ox,-oy)-Math.atan2(cx,cz);
   const wx=x=>x-15.5,wz=y=>15.5-y;
+  const flakeTex=new THREE.CanvasTexture(flakeCanvas(256,'#9fe3ee'));flakeTex.encoding=THREE.sRGBEncoding;
+  const doorMat=new THREE.MeshStandardMaterial({map:flakeTex,roughness:.08,transparent:true,opacity:.85,emissive:lin('#bff6ff'),emissiveMap:flakeTex,emissiveIntensity:0});glowMats.push(doorMat);
 
   const levelMeshes=[];const deco=[],socle=[],markers=[];
   function place(mesh,x,y,level){mesh.position.set(x,(level-1)*BH,y);mesh.userData.baseY=(level-1)*BH;mesh.castShadow=true;mesh.receiveShadow=true;scene.add(mesh);return mesh;}
@@ -502,80 +486,79 @@ function init3D(){
       const xs=g.cells.map(p=>p[0]),ys=g.cells.map(p=>p[1]);
       const xa=Math.min(...xs),xb=Math.max(...xs),ya=Math.min(...ys),yb=Math.max(...ys);
       const cx=(wx(xa)+wx(xb))/2,cz=(wz(ya)+wz(yb))/2,W=xb-xa+1,D=yb-ya+1;
-      let mesh;
-      if(g.kind==='round')mesh=new THREE.Mesh(roundGeo(),mat(g.c));
-      else if(g.kind==='cone1')mesh=new THREE.Mesh(cone1Geo(),mat(g.c));
-      else if(g.kind==='cone3')mesh=new THREE.Mesh(cone3Geo(),mat(g.c));
-      else if(g.kind==='slope'){const n=g.cells.length/2;mesh=new THREE.Mesh(slopeGeo(n),mat(g.c));mesh.rotation.y=RAD(g.out[0],g.out[1],0,1);}
-      else if(g.kind==='corner'){mesh=new THREE.Mesh(cornerGeo(),mat(g.c));mesh.rotation.y=RAD(g.out[0],g.out[1],1,1);}
-      else if(g.kind==='ridge'){mesh=new THREE.Mesh(ridgeGeo(g.cells.length/2),mat(g.c));if(g.axis==='y')mesh.rotation.y=Math.PI/2;}
-      else if(g.kind==='arch'){mesh=new THREE.Mesh(archGeo(),mat(g.c));if(D>W)mesh.rotation.y=Math.PI/2;}
-      else if(g.kind==='fly'){mesh=new THREE.Mesh(flyGeo(),mat(g.c));mesh.rotation.y=Math.atan2(-g.out[1],-g.out[0]);}
+      let mesh;const M=mat(g.c);
+      if(g.kind==='round')mesh=new THREE.Mesh(roundGeo(),M);
+      else if(g.kind==='round2')mesh=new THREE.Mesh(round2Geo(),M);
+      else if(g.kind==='cone1')mesh=new THREE.Mesh(cone1Geo(),M);
+      else if(g.kind==='cone2')mesh=new THREE.Mesh(cone2Geo(),M);
+      else if(g.kind==='cone3')mesh=new THREE.Mesh(cone3Geo(),M);
+      else if(g.kind==='slope'){mesh=new THREE.Mesh(slopeGeo(g.cells.length/2),M);mesh.rotation.y=RAD(g.out[0],g.out[1],0,1);}
+      else if(g.kind==='corner'){mesh=new THREE.Mesh(cornerGeo(),M);mesh.rotation.y=RAD(g.out[0],g.out[1],1,1);}
+      else if(g.kind==='ridge'){mesh=new THREE.Mesh(ridgeGeo(g.cells.length/2),M);if(g.axis==='y')mesh.rotation.y=Math.PI/2;}
+      else if(g.kind==='arch')mesh=new THREE.Mesh(archGeo(),M);
+      else if(g.kind==='fence'){mesh=new THREE.Mesh(fenceGeo(),M);if(g.axis==='y')mesh.rotation.y=Math.PI/2;}
       else if(g.kind==='door'){
-        const studs=g.cells.map(p=>[wx(p[0])-cx,wz(p[1])-cz]);
-        mesh=new THREE.Mesh(brickGeo(W,D,g.h,studs),mat(g.c));
-        const oz=-g.out[1],ph=g.h*BH-.7;
-        const panel=new THREE.Mesh(new THREE.BoxGeometry(W-.9,ph,.08),mat('N'));panel.position.set(0,ph/2,oz*.5);mesh.add(panel);
-        const split=new THREE.Mesh(new THREE.BoxGeometry(.08,ph,.1),mat('K'));split.position.set(0,ph/2,oz*.52);mesh.add(split);
+        const studs=g.cells.map(p=>[wx(p[0])-cx,wz(p[1])-cz]),hh=g.h*BH;
+        const fr=[box(.5,hh-.02,.96,-W/2+.25,hh/2,0),box(.5,hh-.02,.96,W/2-.25,hh/2,0),box(W-.04,.5,.96,0,hh-.25,0)].concat(studs.map(s=>stud(s[0],hh,s[1])));
+        mesh=new THREE.Mesh(merge(fr),M);
+        const panel=new THREE.Mesh(new THREE.BoxGeometry(W-1.02,hh-.52,.12),doorMat);panel.position.set(0,(hh-.52)/2,0);mesh.add(panel);
       }else{
         const studs=g.cells.map(p=>[wx(p[0])-cx,wz(p[1])-cz]);
-        mesh=new THREE.Mesh(brickGeo(W,D,1,studs),mat(g.c));
+        mesh=new THREE.Mesh(brickGeo(W,D,1,studs),M);
       }
       arr.push(place(mesh,cx,cz,L.l));
     });
     levelMeshes.push(arr);
   });
-  // plaque et sol
-  const ground=new THREE.Mesh(new THREE.CircleGeometry(160,48),new THREE.MeshStandardMaterial({color:lin('#c9d4dc'),roughness:1}));
+  // plaque et sol enneigés
+  const ground=new THREE.Mesh(new THREE.CircleGeometry(160,48),new THREE.MeshStandardMaterial({color:lin('#eef4f8'),roughness:1}));
   ground.rotation.x=-Math.PI/2;ground.position.y=-.34;ground.receiveShadow=true;scene.add(ground);
-  const plate=new THREE.Mesh(new THREE.BoxGeometry(32,.32,32),mat('V'));plate.position.y=-.16;plate.receiveShadow=true;scene.add(plate);
-  const studsI=new THREE.InstancedMesh(new THREE.CylinderGeometry(.3,.3,.18,12),mat('V'),1024);
+  const plate=new THREE.Mesh(new THREE.BoxGeometry(32,.32,32),mat('W'));plate.position.y=-.16;plate.receiveShadow=true;scene.add(plate);
+  const studsI=new THREE.InstancedMesh(new THREE.CylinderGeometry(.3,.3,.18,12),mat('W'),1024);
   const M4=new THREE.Matrix4();let si=0;for(let x=0;x<32;x++)for(let z=0;z<32;z++){M4.makeTranslation(x-15.5,.09,z-15.5);studsI.setMatrixAt(si++,M4);}
   studsI.receiveShadow=true;scene.add(studsI);
-  // repères étape 0
   const mk=new THREE.MeshBasicMaterial({color:0xF5C235,transparent:true,opacity:.85});
   LV[0].cells.forEach(c=>{const m=new THREE.Mesh(new THREE.BoxGeometry(.9,.06,.9),mk);m.position.set(wx(c.x),.21,wz(c.y));scene.add(m);markers.push(m);});
-  // décors
-  const addD=(m,arr)=>{m.castShadow=true;m.receiveShadow=true;m.userData.baseY=m.position.y;scene.add(m);arr.push(m);return m;};
-  const cross=(x,z,y)=>{const m=new THREE.Mesh(merge([box(.6,.3,.6,0,.15,0),(()=>{const g=new THREE.CylinderGeometry(.06,.09,4.2,8);g.translate(0,2.4,0);return g;})(),box(1.3,.12,.12,0,3.7,0)]),mat('W'));m.position.set(x,y,z);return m;};
-  TOWERS.forEach(T=>addD(cross(wx(T.cx),wz(TCY),NL*BH),deco));
-  const well=new THREE.Mesh(merge([(()=>{const g=new THREE.CylinderGeometry(.97,.97,BH-.02,28);g.translate(0,BH/2,0);return g;})()]),mat('Y'));well.position.set(wx(24.5),0,wz(10.5));addD(well,deco);
-  const wellTop=new THREE.Mesh(new THREE.CylinderGeometry(.97,.97,.14,28),mat('D'));wellTop.position.set(wx(24.5),BH+.07,wz(10.5));addD(wellTop,deco);
-  const leaf=new THREE.MeshStandardMaterial({color:lin('#2f8f4c'),roughness:.55,flatShading:true});
-  const bush=(x,y,sc,i,arr)=>{const g=new THREE.Group();[[0,0,0,1.5],[1,.3,.6,1.1],[-.9,.2,-.5,1.2],[.2,.9,-.3,1]].forEach(([a,b,c,s])=>{const m=new THREE.Mesh(new THREE.IcosahedronGeometry(s*sc,0),leaf);m.position.set(a*sc,(b+s*.8)*sc,c*sc);m.rotation.set(i,i*2,0);m.castShadow=true;g.add(m);});g.position.set(wx(x),0,wz(y));g.userData.baseY=0;scene.add(g);arr.push(g);};
-  bush(22,8,.7,1,deco);bush(27,12.5,.7,2,deco);
-  TREES.forEach(([x,y],i)=>bush(x,y,1,i+3,socle));
-  // parvis et lampadaires
-  for(let x=0;x<32;x+=4)addD(new THREE.Mesh(new THREE.BoxGeometry(3.96,.4,1.96),mat('S')),socle).position.set(wx(x+1.5),.2,wz(.5));
-  const lampLights=[];
-  LAMPS.forEach(([x,y])=>{
-    const m=new THREE.Mesh(merge([(()=>{const g=new THREE.CylinderGeometry(.47,.47,BH-.02,20);g.translate(0,BH/2,0);return g;})(),(()=>{const g=new THREE.CylinderGeometry(.1,.1,3.2,8);g.translate(0,BH+1.6,0);return g;})()]),mat('K'));
-    m.position.set(wx(x),0,wz(y));addD(m,socle);
-    const glb=new THREE.Mesh(new THREE.CylinderGeometry(.45,.45,.35,20),mat('Z'));glb.position.set(wx(x),BH+3.35,wz(y));addD(glb,socle);
-    const pl=new THREE.PointLight(0xffd58a,0,14,1.8);pl.position.set(wx(x),BH+3.9,wz(y));scene.add(pl);lampLights.push(pl);
-  });
+  // décors : étoile, Olaf, service à thé
+  const addD=(m,arr)=>{m.traverse(o=>{o.castShadow=true;o.receiveShadow=true;});m.userData.baseY=m.position.y;scene.add(m);arr.push(m);return m;};
+  const top=NL*BH,scx=wx(15.5),scz=wz(12.5);
+  const ant=new THREE.Mesh(merge([box(.6,.3,.6,0,.15,0),cylG(.06,.09,3.2,1.9,8)]),mat('I'));ant.position.set(scx,top,scz);addD(ant,deco);
+  const starTex=new THREE.CanvasTexture(flakeCanvas(256,null));starTex.encoding=THREE.sRGBEncoding;
+  const starMat=new THREE.MeshStandardMaterial({color:lin('#AEEFEC'),map:starTex,transparent:true,opacity:.95,emissive:lin('#dffbff'),emissiveMap:starTex,emissiveIntensity:0,side:THREE.DoubleSide,roughness:.1});glowMats.push(starMat);
+  const star=new THREE.Mesh(new THREE.CylinderGeometry(1,1,.16,32),[mat('I'),starMat,starMat]);star.rotation.x=Math.PI/2;star.position.set(scx,top+4.3,scz);addD(star,deco);
+  const olaf=new THREE.Group();
+  [[0,.47,.55],[0,1.3,.42],[0,2.05,.4]].forEach(([_,y,r])=>{const s=new THREE.Mesh(new THREE.SphereGeometry(r,20,14),mat('W'));s.position.y=y;olaf.add(s);});
+  const nose=new THREE.Mesh(new THREE.ConeGeometry(.1,.45,12),mat('O'));nose.rotation.x=Math.PI/2;nose.position.set(0,2.05,.55);olaf.add(nose);
+  [-.14,.14].forEach(x=>{const e=new THREE.Mesh(new THREE.SphereGeometry(.06,8,6),mat('K'));e.position.set(x,2.2,.35);olaf.add(e);});
+  olaf.position.set(wx(3),0,wz(2));addD(olaf,deco);
+  [[15,6.5],[16,6.5]].forEach(([x,y])=>{const c=new THREE.Mesh(cylG(.45,.45,.3,.15,20),mat('L'));c.position.set(wx(x),10*BH,wz(y));addD(c,deco);});
+  // aménagements : allée de glace, cristaux, congères
+  [[14,0],[16,0],[14,2],[16,2]].forEach(([x,y])=>{const t=new THREE.Mesh(new THREE.BoxGeometry(1.96,.3,1.96),mat('I'));t.position.set(wx(x+.5),.15,wz(y+.5));addD(t,socle);});
+  CRYSTALS.forEach(([x,y])=>{const c=new THREE.Mesh(cone1Geo(),mat('I'));c.position.set(wx(x),0,wz(y));addD(c,socle);});
+  DRIFTS.forEach(([x,y,r])=>{const d=new THREE.Mesh(slopeGeo(2),mat('W'));d.rotation.y=r?Math.PI/2:Math.PI;d.position.set(wx(x+.5),0,wz(y+.5));addD(d,socle);});
   socle.forEach(m=>m.userData.baseY=m.position.y);
+  // neige qui tombe
+  const NF=900,fp=new Float32Array(NF*3);for(let i=0;i<NF;i++){fp[i*3]=(Math.random()-.5)*90;fp[i*3+1]=Math.random()*70;fp[i*3+2]=(Math.random()-.5)*90;}
+  const fg=new THREE.BufferGeometry();fg.setAttribute('position',new THREE.BufferAttribute(fp,3));
+  const flakes=new THREE.Points(fg,new THREE.PointsMaterial({color:0xffffff,size:.45,transparent:true,opacity:.9,depthWrite:false}));scene.add(flakes);
   // nuit
-  const spots=[[-26,2,40],[22,2,40]].map(p=>{const s=new THREE.SpotLight(0xffd9a0,0,0,.42,.6);s.position.set(...p);s.target.position.set(-6,14,6);scene.add(s);scene.add(s.target);return s;});
+  const inner=new THREE.PointLight(0xc79bff,0,40,1.5);inner.position.set(0,6,-4);scene.add(inner);
+  const spots=[[-24,2,38],[22,2,38]].map(p=>{const s=new THREE.SpotLight(0xbfe8ff,0,0,.42,.6);s.position.set(...p);s.target.position.set(0,12,4);scene.add(s);scene.add(s.target);return s;});
   const sv=[];for(let i=0;i<700;i++){const u=Math.random()*2-1,a=Math.random()*Math.PI*2,r=220,y=Math.abs(u);sv.push(r*Math.sqrt(1-u*u)*Math.cos(a),r*y+10,r*Math.sqrt(1-u*u)*Math.sin(a));}
   const sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.Float32BufferAttribute(sv,3));
   const stars=new THREE.Points(sg,new THREE.PointsMaterial({color:0xffffff,size:1.1,sizeAttenuation:false}));stars.visible=false;scene.add(stars);
   const moon=new THREE.Mesh(new THREE.SphereGeometry(7,32,16),new THREE.MeshBasicMaterial({color:0xfff6dc}));moon.position.set(110,120,-160);moon.visible=false;scene.add(moon);
-  scene.fog=new THREE.Fog(0xBFD9EE,150,420);
-
-  let night=false;
+  scene.fog=new THREE.Fog(0x8FCBE6,150,420);
   function setNight(on){
-    night=on;stage.classList.toggle('night',on);
-    const bgc=on?0x0B1828:0xBFD9EE;renderer.setClearColor(bgc);scene.fog.color.set(bgc);
-    hemi.intensity=on?.14:.62;hemi.color.set(on?0x8aa4d6:0xe8f2ff);
-    sun.intensity=on?.22:1.05;sun.color.set(on?0x9fb8ff:0xfff1dc);
-    glowMats.forEach(m=>m.emissiveIntensity=on?1.4:0);
-    spots.forEach(s=>s.intensity=on?1.1:0);
-    ground.material.color.copy(lin(on?'#1c2636':'#c9d4dc'));
-    stars.visible=moon.visible=on;updateLamps();
+    stage.classList.toggle('night',on);
+    const bgc=on?0x0B1828:0x8FCBE6;renderer.setClearColor(bgc);scene.fog.color.set(bgc);
+    hemi.intensity=on?.16:.7;hemi.color.set(on?0x8aa4d6:0xeef8ff);
+    sun.intensity=on?.22:1;sun.color.set(on?0x9fb8ff:0xfff6ea);
+    glowMats.forEach(m=>m.emissiveIntensity=on?1.3:0);
+    spots.forEach(s=>s.intensity=on?.45:0);inner.intensity=on?2.2:0;
+    ground.material.color.copy(lin(on?'#1c2636':'#eef4f8'));
+    stars.visible=moon.visible=on;
   }
-  function updateLamps(){const on=night&&curStep>=28;lampLights.forEach(p=>p.intensity=on?1.6:0);}
-
   // caméra
   let th=.55,ph=1.2,rad=88,autoSpin=true,lastUser=0;const tgt=new THREE.Vector3(0,14,1);let tgtY=14;
   function updCam(){camera.position.set(tgt.x+rad*Math.sin(ph)*Math.sin(th),tgt.y+rad*Math.cos(ph),tgt.z+rad*Math.sin(ph)*Math.cos(th));camera.lookAt(tgt);}
@@ -588,35 +571,29 @@ function init3D(){
   const up=e=>{ptrs.delete(e.pointerId);if(ptrs.size<2)pinch0=0;};
   canvas.addEventListener('pointerup',up);canvas.addEventListener('pointercancel',up);
   canvas.addEventListener('wheel',e=>{e.preventDefault();rad=Math.min(140,Math.max(22,rad*(1+e.deltaY*.001)));lastUser=performance.now();},{passive:false});
-
   function resize(){const w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.fov=w<600?46:34;camera.updateProjectionMatrix();}
   window.addEventListener('resize',resize);resize();
-
-  // animation
   const anims=[];const ease=t=>1-Math.pow(1-t,3);
   function drop(list){const t0=performance.now();list.forEach((m,i)=>{m.position.y=m.userData.baseY+6;anims.push({m,t0:t0+i*12,dur:420});});}
-  let curStep=LAST;
   function show(step,prev){
-    curStep=step;
     const lvl=STEPS[step].k==='lvl'?STEPS[step].l:(step===0?0:NL);
     levelMeshes.forEach((arr,i)=>arr.forEach(m=>{m.visible=i+1<=lvl;}));
     deco.forEach(m=>m.visible=step>=27);socle.forEach(m=>m.visible=step>=28);markers.forEach(m=>m.visible=step===0);
     anims.length=0;levelMeshes.forEach(a=>a.forEach(m=>m.position.y=m.userData.baseY));deco.concat(socle).forEach(m=>m.position.y=m.userData.baseY);
-    if(prev===step-1){
-      if(STEPS[step].k==='lvl')drop(levelMeshes[step-1]);else if(step===27)drop(deco);else if(step===28)drop(socle);
-    }
+    if(prev===step-1){if(STEPS[step].k==='lvl')drop(levelMeshes[step-1]);else if(step===27)drop(deco);else if(step===28)drop(socle);}
     tgtY=step===0?4:lvl>=NL?15:Math.max(6,Math.min(16,lvl*BH*.55+4));
-    updateLamps();
   }
+  let snowing=true,last=0;
   function loop(now){
+    const dt=Math.min(.05,(now-last)/1000||0);last=now;
     for(let i=anims.length-1;i>=0;i--){const a=anims[i];const t=Math.min(1,Math.max(0,(now-a.t0)/a.dur));a.m.position.y=a.m.userData.baseY+6*(1-ease(t));if(t>=1)anims.splice(i,1);}
+    if(snowing){const p=fg.attributes.position.array;for(let i=0;i<NF;i++){p[i*3+1]-=dt*(3+(i%7)*.5);p[i*3]+=Math.sin(now*.0006+i)*dt*.6;if(p[i*3+1]<0)p[i*3+1]=70;}fg.attributes.position.needsUpdate=true;}
     if(autoSpin&&now-lastUser>3500&&!ptrs.size)th+=.0018;
     tgt.y+=(tgtY-tgt.y)*.06;updCam();
     renderer.render(scene,camera);requestAnimationFrame(loop);
   }
-  setNight(false);
-  requestAnimationFrame(loop);
-  return{show,setNight,setSpin:v=>{autoSpin=v;}};
+  setNight(false);requestAnimationFrame(loop);
+  return{show,setNight,setSpin:v=>{autoSpin=v;},setSnow:v=>{snowing=v;flakes.visible=v;}};
 }
 
 // ================= Interface
@@ -631,19 +608,20 @@ function render(prev){
   let title,notes,plan,planTitle,parts;
   if(st.k==='base'){
     title='Repérer les emplacements<small>Plaque de base</small>';
-    notes=["Posez la plaque verte 32x32 devant vous, bord avant vers vous. La façade ouest regarde vers vous, le chevet part vers le fond, à l'est.","La cathédrale occupe les colonnes 2 à 19, du 4e au 31e rang. Les deux tours sont au premier plan.","Le cloître se place à droite de la nef, côté sud, colonnes 20 à 31.","Les deux premiers rangs restent libres pour le parvis. Parvis, lampadaires et arbres viennent à la fin."];
+    notes=["Posez la plaque blanche 32x32 devant vous, bord avant vers vous. La porte de glace regarde vers vous, l'arrière ouvert est au fond.","La grande salle occupe les colonnes 10 à 23. L'aile basse est à gauche, la chambre à droite.","Devant à gauche : l'escalier de glace et la grotte d'Olaf.","L'allée de glace, les cristaux et les congères viennent à la fin."];
     plan=baseSVG(false);planTitle='Emprises en jaune';parts=addList({},EXTRA.base);
   }else if(st.k==='lvl'){
     const L=LV[st.l-1];
     title=`Niveau ${st.l}<small>${TITLE(st.l)}, ${L.groups.length} pièces</small>`;
     notes=levelNotes(st.l);plan=planSVG(st.l);planTitle=`Vue de dessus du niveau ${st.l}`;parts=tally(L.groups);
   }else if(st.k==='deco'){
-    title='Croix et jardin du cloître<small>Finitions</small>';
-    notes=["Une antenne 1x4 blanche au sommet de chaque flèche, c'est la croix.","Au centre du jardin du cloître, un puits : brique ronde 2x2 beige foncé et tuile ronde 2x2 gris foncé.","Deux feuillages dans le jardin, de part et d'autre du puits."];
-    plan=baseSVG(true);planTitle='Emplacement du puits et des feuillages';parts=addList({},EXTRA.deco);
+    title="L'étoile, Olaf et le thé<small>Finitions</small>";
+    notes=["Une antenne 1x4 de glace sur la pointe de la flèche, puis la tuile ronde 2x2 de glace clipsée debout : c'est l'étoile-flocon. Collez l'autocollant ci-contre dessus.","Olaf dans sa grotte : trois briques rondes 1x1 blanches empilées, un cône 1x1 orange pour le nez. Dessinez les yeux au feutre ou avec un autocollant.","Deux tuiles rondes 1x1 lavande sur la table du balcon : les tasses."];
+    plan=`<p style="margin:4px 0 0">Autocollant à l'échelle 1 : imprimez à 100 %, découpez au trait.</p><div class="sticker"><svg width="56" height="56" viewBox="-28 -28 56 56" aria-hidden="true"><g stroke="#fff" stroke-width="2.2" stroke-linecap="round">${[0,60,120,180,240,300].map(a=>`<g transform="rotate(${a})"><path d="M0 0V-24M0-10l5-5M0-10l-5-5M0-17l4-4M0-17l-4-4"/></g>`).join('')}</g></svg></div><p style="margin:0;color:var(--muted);font-size:.9rem">16 mm de diamètre, la taille d'une tuile ronde 2x2.</p>`;
+    planTitle='Autocollant flocon';parts=addList({},EXTRA.deco);
   }else{
-    title='Parvis, lampadaires et arbres<small>Aménagements</small>';
-    notes=["Huit tuiles 2x4 beiges sur les deux premiers rangs, d'un bord à l'autre : c'est le parvis.","Quatre lampadaires sur le 3e rang : brique ronde noire, barre 4L, plaque ronde jaune transparent. De nuit, ils s'allument.","Trois grands feuillages sur la pelouse derrière le cloître."];
+    title='Allée de glace et congères<small>Aménagements</small>';
+    notes=["Quatre tuiles 2x2 bleu clair transparent devant la porte : l'allée de glace.","Huit cônes 1x1 de glace piqués autour du château, ce sont les cristaux.","Six pentes 2x2 blanches posées à plat au fond et sur les côtés : les congères."];
     plan=baseSVG(true);planTitle='Plaque terminée';parts=addList({},EXTRA.socle);
   }
   document.getElementById('title').innerHTML=title;
@@ -676,8 +654,8 @@ document.getElementById('play').onclick=()=>{
   const b=document.getElementById('play');b.textContent='❚❚';b.setAttribute('aria-label','Mettre en pause');
   timer=setInterval(()=>{if(step>=LAST){stopPlay();return;}go(step+1);},1300);
 };
-document.getElementById('night').onclick=e=>{const on=e.currentTarget.getAttribute('aria-pressed')!=='true';e.currentTarget.setAttribute('aria-pressed',on);if(three)three.setNight(on);};
-document.getElementById('spin').onclick=e=>{const on=e.currentTarget.getAttribute('aria-pressed')!=='true';e.currentTarget.setAttribute('aria-pressed',on);if(three)three.setSpin(on);};
+const toggle=(id,fn)=>{document.getElementById(id).onclick=e=>{const on=e.currentTarget.getAttribute('aria-pressed')!=='true';e.currentTarget.setAttribute('aria-pressed',on);if(three)fn(on);};};
+toggle('night',v=>three.setNight(v));toggle('spin',v=>three.setSpin(v));toggle('snow',v=>three.setSnow(v));
 document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;if(e.key==='ArrowRight')document.getElementById('next').click();if(e.key==='ArrowLeft')document.getElementById('prev').click();});
 render();
 </script>
