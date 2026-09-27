@@ -92,7 +92,7 @@ textarea{width:100%;min-height:160px;margin-top:10px;font:12px/1.4 ui-monospace,
 <div class="stage" id="stage">
   <canvas id="c" aria-label="Maquette 3D du château de glace d'Elsa, faites glisser pour tourner"></canvas>
   <div class="scrim-top"></div><div class="scrim-bot"></div>
-  <div class="ov-title"><h1>Le château d'Elsa</h1><p>Notice de montage en 3D : <b id="fPieces">0</b> pièces, 26 niveaux, environ 30 cm de haut avec l'étoile.</p></div>
+  <div class="ov-title"><h1>Le château d'Elsa</h1><p>Notice de montage en 3D : <b id="fPieces">0</b> pièces, 26 niveaux, avec Elsa, Anna, Sven, Olaf et la voiture d'Elsa.</p></div>
   <div class="ov-toggles">
     <button class="pill" id="night" aria-pressed="false">Nuit</button>
     <button class="pill" id="spin" aria-pressed="true">Rotation</button>
@@ -279,17 +279,21 @@ const LV=[];for(let l=1;l<=NL;l++)LV.push(buildLevel(l));
 const COL={
   W:{n:'Blanc',hex:'#F2F2F0',bl:1},A:{n:'Azur moyen',hex:'#36AEBF',bl:156},E:{n:'Turquoise foncé',hex:'#008F9B',bl:39},
   I:{n:'Bleu clair transparent',hex:'#AEEFEC',bl:15},P:{n:'Violet transparent',hex:'#A5A5CB',bl:51},
-  M:{n:'Lavande moyen',hex:'#AC78BA',bl:157},L:{n:'Lavande',hex:'#E1D5ED',bl:154},O:{n:'Orange',hex:'#FE8A18',bl:4},K:{n:'Noir',hex:'#1B1B1B',bl:11}
+  M:{n:'Lavande moyen',hex:'#AC78BA',bl:157},L:{n:'Lavande',hex:'#E1D5ED',bl:154},O:{n:'Orange',hex:'#FE8A18',bl:4},K:{n:'Noir',hex:'#1B1B1B',bl:11},
+  B:{n:'Bleu ciel (Bright Light Blue)',hex:'#9FC3E9',bl:105},N:{n:'Bleu foncé',hex:'#0A3463',bl:63},H:{n:'Jaune très clair',hex:'#F6E9A6',bl:103},
+  G:{n:'Magenta',hex:'#923978',bl:71},D:{n:'Orange foncé',hex:'#A95500',bl:68},S:{n:'Nougat moyen',hex:'#AA7D55',bl:150},
+  T:{n:'Beige (Tan)',hex:'#E4CD9E',bl:2},R:{n:'Brun foncé',hex:'#352100',bl:120},F:{n:'Nougat clair',hex:'#F6D7B3',bl:90},Z:{n:'Jaune transparent',hex:'#F5CD2F',bl:19}
 };
-const COLORDER='WAEIPMLOK';
+const COLORDER='WAEIPMLBNHGDSTRFZOK';
 const CAT={
   '1x1':['3005','Brique 1x1'],'1x2':['3004','Brique 1x2'],'1x3':['3622','Brique 1x3'],'1x4':['3010','Brique 1x4'],'1x6':['3009','Brique 1x6'],
   'r':['3062b','Brique ronde 1x1'],'b22r':['3941','Brique ronde 2x2'],'c1':['4589','Cône 1x1'],'c2':['3942c','Cône 2x2x2'],'c3':['6233','Cône 3x3x2'],
   'door':['60596','Cadre de porte 1x4x6'],'glassdoor':['60616','Porte 1x4x6'],'arch':['15254','Arche 1x6x2'],'fence':['3633','Barrière 1x4x1'],
   '3039':['3039','Pente 45° 2x2'],'3040':['3040','Pente 45° 2x1'],'3045':['3045','Pente 45° 2x2 double convexe'],'3043':['3043','Faîtière 45° 2x2'],'3044':['3044c','Faîtière 45° 2x1'],
-  'ant':['3957a','Antenne 1x4'],'tr2':['14769','Tuile ronde 2x2 + autocollant'],'tr1':['98138','Tuile ronde 1x1'],'bp':['3811','Plaque de base 32x32'],'t22':['3068b','Tuile 2x2']
+  'ant':['3957a','Antenne 1x4'],'tr2':['14769','Tuile ronde 2x2 + autocollant'],'tr1':['98138','Tuile ronde 1x1'],'bp':['3811','Plaque de base 32x32'],'t22':['3068b','Tuile 2x2'],
+  't13':['63864','Tuile 1x3'],'pr1':['4073','Plaque ronde 1x1'],'holder':['4600','Plaque 2x2 avec porte-roues'],'rim':['4624','Jante 8 mm'],'tire':['3641','Pneu 14 mm'],'steer':['3829c01','Volant avec support']
 };
-const CRYSTALS=[[1,9],[2,15],[0,20],[30,3],[31,8],[26,2],[8,1],[22,1]];
+const CRYSTALS=[[1,9],[2,15],[0,20],[31,8],[30,12],[29,19],[31,27],[1,28]];
 const DRIFTS=[[2,24,1],[6,28,0],[28,22,1],[25,28,0],[12,26,1],[19,27,0]];
 const EXTRA={
   base:[['bp','W',1]],
@@ -299,10 +303,56 @@ const EXTRA={
 function tally(groups){const m={};const inc=(k,q)=>{m[k]=(m[k]||0)+q;};groups.forEach(g=>{inc(g.part+'|'+g.c,1);if(g.part==='door')inc('glassdoor|I',1);});return m;}
 function addList(m,list){list.forEach(([p,c,q])=>{const k=p+'|'+c;m[k]=(m[k]||0)+q;});return m;}
 const sortParts=(a,b)=>{const[pa,ca]=a[0].split('|'),[pb,cb]=b[0].split('|');return COLORDER.indexOf(ca)-COLORDER.indexOf(cb)||CAT[pa][0].localeCompare(CAT[pb][0]);};
-const isRound=p=>['r','b22r','c1','c2','c3','tr1','tr2'].includes(p);
+const isRound=p=>['r','b22r','c1','c2','c3','tr1','tr2','pr1','rim','tire'].includes(p);
 
-const STEPS=[{k:'base'}];for(let l=1;l<=NL;l++)STEPS.push({k:'lvl',l});STEPS.push({k:'deco'},{k:'socle'});
+const STEPS=[{k:'base'}];for(let l=1;l<=NL;l++)STEPS.push({k:'lvl',l});STEPS.push({k:'deco'},{k:'figs'},{k:'car'},{k:'socle'});
 const LAST=STEPS.length-1;
+
+// ================= Personnages et voiture (posés sur le château terminé)
+const row=(x0,x1,y)=>{const r=[];for(let x=x0;x<=x1;x++)r.push([x,y]);return r;};
+const col=(x,y0,y1)=>{const r=[];for(let y=y0;y<=y1;y++)r.push([x,y]);return r;};
+const pc=(k,cells,part,c,kind)=>({k,cells,part,c,kind:kind||'brick'});
+const ELSA={name:'Elsa',L0:10,face:[22,6],pieces:[
+  pc(0,row(21,23,6),'1x3','B'),pc(0,row(21,23,7),'1x3','B'),
+  pc(1,row(21,23,6),'1x3','B'),pc(1,row(21,23,7),'1x3','B'),
+  pc(2,row(21,23,6),'1x3','B'),pc(2,row(21,23,7),'1x3','I'),
+  pc(3,[[21,6]],'1x1','I'),pc(3,[[22,6]],'1x1','B'),pc(3,[[23,6]],'1x1','I'),pc(3,row(21,23,7),'1x3','I'),
+  pc(4,[[22,6]],'r','F','round'),pc(4,[[23,6]],'r','H','round'),pc(4,row(21,23,7),'1x3','H'),
+  pc(5,[[22,6]],'tr1','H','tileR'),pc(5,[[22,7]],'r','H','round')
+]};
+const ANNA={name:'Anna',L0:10,face:[9,6],pieces:[
+  pc(0,row(8,10,6),'1x3','N'),pc(0,row(8,10,7),'1x3','N'),
+  pc(1,row(8,10,6),'1x3','N'),pc(1,row(8,10,7),'1x3','N'),
+  pc(2,row(8,10,6),'1x3','K'),pc(2,row(8,10,7),'1x3','G'),
+  pc(3,[[8,6]],'1x1','G'),pc(3,[[9,6]],'1x1','K'),pc(3,[[10,6]],'1x1','G'),pc(3,row(8,10,7),'1x3','G'),
+  pc(4,[[8,6]],'r','D','round'),pc(4,[[9,6]],'r','F','round'),pc(4,[[10,6]],'r','D','round'),pc(4,row(8,10,7),'1x3','D'),
+  pc(5,[[9,6]],'tr1','D','tileR'),pc(5,row(8,10,7),'t13','G','tile')
+]};
+const SVEN={name:'Sven',L0:1,pieces:[
+  ...[0,1].flatMap(k=>[[8,1],[8,2],[11,1],[11,2]].map(p=>pc(k,[p],'r','S','round'))),
+  pc(2,row(8,11,1),'1x4','S'),pc(2,row(8,11,2),'1x4','T'),
+  pc(3,row(8,11,1),'1x4','S'),pc(3,row(8,11,2),'1x4','S'),pc(3,col(7,1,2),'1x2','S'),
+  pc(4,col(6,1,2),'1x2','T'),pc(4,col(7,1,2),'1x2','S'),
+  pc(5,[[7,1]],'r','R','round'),pc(5,[[7,2]],'r','R','round'),
+  pc(6,[[7,1]],'c1','R','cone1'),pc(6,[[7,2]],'c1','R','cone1')
+]};
+const CAR={name:'Voiture',L0:1,pieces:[
+  pc(0,[[21,2],[22,2],[21,3],[22,3]],'holder','K','holder'),pc(0,[[27,2],[28,2],[27,3],[28,3]],'holder','K','holder'),
+  ...[0,1,2,3,4,5].flatMap(y=>[pc(1,row(20,25,y),'1x6','N'),pc(1,row(26,29,y),'1x4','N')]),
+  pc(2,row(20,25,0),'1x6','B'),pc(2,row(26,29,0),'1x4','B'),pc(2,row(20,25,5),'1x6','B'),pc(2,row(26,29,5),'1x4','B'),
+  ...[1,2,3,4].map(y=>pc(2,row(20,22,y),'1x3','W')),
+  pc(2,col(23,1,4),'1x4','N'),pc(2,[[24,2]],'steer','K','steer'),
+  pc(2,col(25,1,2),'1x2','W'),pc(2,col(25,3,4),'1x2','W'),
+  ...[1,2,3,4].map(y=>pc(2,row(26,29,y),'1x4','B')),
+  pc(3,col(23,1,4),'1x4','I'),
+  pc(3,col(26,1,2),'1x2','W'),pc(3,col(26,3,4),'1x2','W'),
+  pc(3,row(20,22,0),'1x3','W'),pc(3,row(20,22,5),'1x3','W'),
+  pc(3,row(27,28,0),'1x2','W'),pc(3,row(27,28,5),'1x2','W'),
+  pc(3,[[29,0]],'c1','N','cone1'),pc(3,[[29,5]],'c1','N','cone1'),
+  pc(4,[[20,0]],'pr1','Z','plateR'),pc(4,[[20,5]],'pr1','Z','plateR')
+]};
+const FIGS=[ELSA,ANNA,SVEN],CARS=[CAR];
+function tallyObjs(list){const m={};const inc=(k,q)=>{m[k]=(m[k]||0)+q;};list.forEach(o=>o.pieces.forEach(p=>{inc(p.part+'|'+p.c,1);if(p.part==='holder'){inc('rim|W',2);inc('tire|K',2);}}));return m;}
 
 // ================= Textes
 const TITLE=l=>l===1?"Fondations, grotte d'Olaf et chambre":l<=4?'Rez-de-chaussée':l<=6?"Toit de l'aile gauche":l<=8?'Arche de la porte de glace':l===9?'Plancher du balcon':l===10?'Balcon, trônes et garde-corps':l<=17?'Salle haute et tourelles':l===18?'Toit de la salle haute':l<=21?'Donjon et cônes des tourelles':l===22?'Pignons du donjon':l===23?'Base de la flèche':l<=25?'Cône de glace et pointes des tourelles':'Pointe de la flèche';
@@ -388,9 +438,24 @@ function baseSVG(full){
     CRYSTALS.forEach(([x,r])=>{s+=`<circle cx="${X(x)+S/2}" cy="${R(r)+S/2}" r="${S*.45}" fill="${COL.I.hex}" stroke="#7ab"/>`;});
     DRIFTS.forEach(([x,r])=>{s+=`<rect x="${X(x)}" y="${R(r+1)}" width="${2*S}" height="${2*S}" fill="#fff" stroke="#bcc" rx="2"/>`;});
     s+=`<circle cx="${X(3)+S/2}" cy="${R(2)+S/2}" r="${S*.45}" fill="#fff" stroke="#888"/>`;
+    const topC=new Map();FIGS.concat(CARS).forEach(o=>o.pieces.slice().sort((a,b)=>a.k-b.k).forEach(p=>p.cells.forEach(c=>topC.set(c+'',p.c))));
+    topC.forEach((c,k)=>{const [x,y]=k.split(',').map(Number);s+=`<rect x="${X(x)+1}" y="${R(y)+1}" width="${S-2}" height="${S-2}" fill="${COL[c].hex}" stroke="#555" stroke-width=".4"/>`;});
   }
   s+=`<text x="${W/2}" y="${H+13}" font-size="11" text-anchor="middle" fill="var(--muted)" font-family="DM Sans,sans-serif">▼ bord avant de la plaque, côté porte</text></svg>`;
   return s;
+}
+function objPlans(o){
+  const xs=o.pieces.flatMap(p=>p.cells.map(c=>c[0])),ys=o.pieces.flatMap(p=>p.cells.map(c=>c[1]));
+  const x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys),S=13,W=(x1-x0+1)*S+4,H=(y1-y0+1)*S+4;
+  const ks=[...new Set(o.pieces.map(p=>p.k))].sort((a,b)=>a-b);
+  return `<div style="margin:6px 0 10px"><b style="font-size:.9rem">${o.name}</b><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">`+ks.map(k=>{
+    let s=`<svg width="${W}" height="${H+14}" style="width:${W}px;height:${H+14}px;display:inline-block" viewBox="0 0 ${W} ${H+14}" role="img" aria-label="${o.name}, rang ${k+1}">`;
+    for(let x=x0;x<=x1;x++)for(let y=y0;y<=y1;y++)s+=`<rect x="${2+(x-x0)*S+.5}" y="${2+(y1-y)*S+.5}" width="${S-1}" height="${S-1}" fill="var(--grid)"/>`;
+    o.pieces.filter(p=>p.k===k).forEach(p=>{const px=p.cells.map(c=>c[0]),py=p.cells.map(c=>c[1]);const a=Math.min(...px),b=Math.max(...px),c=Math.min(...py),d=Math.max(...py);
+      const X=2+(a-x0)*S+1,Y=2+(y1-d)*S+1,w=(b-a+1)*S-2,h=(d-c+1)*S-2,rd=['round','cone1','tileR','plateR'].includes(p.kind);
+      s+=rd?`<circle cx="${X+w/2}" cy="${Y+h/2}" r="${w/2}" fill="${COL[p.c].hex}" stroke="var(--stroke)"/>`:`<rect x="${X}" y="${Y}" width="${w}" height="${h}" rx="2" fill="${COL[p.c].hex}" stroke="var(--stroke)"/>`;
+      if(p.kind==='holder')s+=`<rect x="${X-1}" y="${Y-4}" width="${w+2}" height="3" fill="#333"/><rect x="${X-1}" y="${Y+h+1}" width="${w+2}" height="3" fill="#333"/>`;});
+    return s+`<text x="${W/2}" y="${H+11}" font-size="10" text-anchor="middle" fill="var(--muted)" font-family="DM Sans,sans-serif">rang ${k+1}</text></svg>`;}).join('')+`</div></div>`;
 }
 function chips(m){
   return Object.entries(m).sort(sortParts).map(([k,q])=>{const[p,c]=k.split('|');return `<span class="chip"><i class="sw${isRound(p)?' round':''}" style="background:${COL[c].hex}"></i><b>${q}×</b> ${CAT[p][1]}</span>`;}).join('');
@@ -532,6 +597,39 @@ function init3D(){
   [-.14,.14].forEach(x=>{const e=new THREE.Mesh(new THREE.SphereGeometry(.06,8,6),mat('K'));e.position.set(x,2.2,.35);olaf.add(e);});
   olaf.position.set(wx(3),0,wz(2));addD(olaf,deco);
   [[15,6.5],[16,6.5]].forEach(([x,y])=>{const c=new THREE.Mesh(cylG(.45,.45,.3,.15,20),mat('L'));c.position.set(wx(x),10*BH,wz(y));addD(c,deco);});
+  // personnages et voiture
+  const figMeshes=[],carMeshes=[];
+  const GLZ=new THREE.MeshStandardMaterial({color:lin('#F5CD2F'),roughness:.08,transparent:true,opacity:.85,emissive:lin('#ffe27a'),emissiveIntensity:0});glowMats.push(GLZ);
+  const pmat=c=>c==='Z'?GLZ:mat(c);
+  function faceTex(){const cv=document.createElement('canvas');cv.width=cv.height=64;const g=cv.getContext('2d');g.fillStyle='#1B1B1B';[[22,28],[42,28]].forEach(([x,y])=>{g.beginPath();g.ellipse(x,y,4,6,0,0,Math.PI*2);g.fill();});g.strokeStyle='#b0433a';g.lineWidth=3;g.beginPath();g.arc(32,38,9,.25*Math.PI,.75*Math.PI);g.stroke();const t=new THREE.CanvasTexture(cv);t.encoding=THREE.sRGBEncoding;return t;}
+  const faceMat=new THREE.MeshBasicMaterial({map:faceTex(),transparent:true});
+  function buildObj(o,arr){
+    o.pieces.forEach(p=>{
+      const xs=p.cells.map(c=>c[0]),ys=p.cells.map(c=>c[1]);const xa=Math.min(...xs),xb=Math.max(...xs),ya=Math.min(...ys),yb=Math.max(...ys);
+      const cx=(wx(xa)+wx(xb))/2,cz=(wz(ya)+wz(yb))/2,W=xb-xa+1,D=yb-ya+1,M=pmat(p.c);let m;
+      if(p.kind==='round')m=new THREE.Mesh(roundGeo(),M);
+      else if(p.kind==='cone1')m=new THREE.Mesh(cone1Geo(),M);
+      else if(p.kind==='tile')m=new THREE.Mesh(box(W-.04,.38,D-.04,0,.19,0),M);
+      else if(p.kind==='tileR')m=new THREE.Mesh(cylG(.47,.47,.38,.19),M);
+      else if(p.kind==='plateR')m=new THREE.Mesh(merge([cylG(.47,.47,.38,.19),stud(0,.38,0)]),M);
+      else if(p.kind==='holder'){m=new THREE.Group();m.add(new THREE.Mesh(box(1.96,.38,1.96,0,.19,0),M));
+        const tire=new THREE.MeshStandardMaterial({color:lin('#1B1B1B'),roughness:.8});
+        [-1.45,1.45].forEach(dz=>{const t=new THREE.Mesh(new THREE.CylinderGeometry(.82,.82,.55,24),tire);t.rotation.x=Math.PI/2;t.position.set(0,.82,dz);m.add(t);
+          const r=new THREE.Mesh(new THREE.CylinderGeometry(.45,.45,.58,18),mat('W'));r.rotation.x=Math.PI/2;r.position.set(0,.82,dz);m.add(r);});}
+      else if(p.kind==='steer'){m=new THREE.Group();m.add(new THREE.Mesh(merge([box(.9,.3,.9,0,.15,0),cylG(.07,.07,.9,.7,8)]),M));const w=new THREE.Mesh(new THREE.TorusGeometry(.4,.07,8,20),M);w.position.set(-.1,1.15,0);w.rotation.y=Math.PI/2;w.rotation.x=.35;m.add(w);}
+      else m=new THREE.Mesh(brickGeo(W,D,1,p.cells.map(c=>[wx(c[0])-cx,wz(c[1])-cz])),M);
+      m.position.set(cx,(o.L0+p.k-1)*BH,cz);addD(m,arr);
+    });
+    if(o.face){const f=new THREE.Mesh(new THREE.PlaneGeometry(.8,.8),faceMat);f.position.set(wx(o.face[0]),(o.L0+3.5)*BH+.05,wz(o.face[1])+.49);addD(f,arr);}
+  }
+  FIGS.forEach(o=>buildObj(o,figMeshes));CARS.forEach(o=>buildObj(o,carMeshes));
+  // Sven : yeux et truffe
+  [[wz(1)+.5],[wz(2)-.5]].forEach(([z],i)=>{const e=new THREE.Mesh(new THREE.SphereGeometry(.12,10,8),mat('K'));e.position.set(wx(7)-.1,4.7*BH,z+(i?-.02:.02));addD(e,figMeshes);});
+  const nz=new THREE.Mesh(new THREE.SphereGeometry(.28,12,10),mat('K'));nz.position.set(wx(6)-.5,4.45*BH,wz(1.5));addD(nz,figMeshes);
+  // flocon sur le capot
+  const hoodCv=flakeCanvas(128,null);const hoodT=new THREE.CanvasTexture(hoodCv);
+  const hood=new THREE.Mesh(new THREE.PlaneGeometry(2.4,2.4),new THREE.MeshBasicMaterial({map:hoodT,transparent:true,color:0x0A3463}));hood.rotation.x=-Math.PI/2;hood.position.set(wx(21),3*BH+.2,wz(2.5));addD(hood,carMeshes);
+  figMeshes.concat(carMeshes).forEach(m=>m.userData.baseY=m.position.y);
   // aménagements : allée de glace, cristaux, congères
   [[14,0],[16,0],[14,2],[16,2]].forEach(([x,y])=>{const t=new THREE.Mesh(new THREE.BoxGeometry(1.96,.3,1.96),mat('I'));t.position.set(wx(x+.5),.15,wz(y+.5));addD(t,socle);});
   CRYSTALS.forEach(([x,y])=>{const c=new THREE.Mesh(cone1Geo(),mat('I'));c.position.set(wx(x),0,wz(y));addD(c,socle);});
@@ -578,9 +676,9 @@ function init3D(){
   function show(step,prev){
     const lvl=STEPS[step].k==='lvl'?STEPS[step].l:(step===0?0:NL);
     levelMeshes.forEach((arr,i)=>arr.forEach(m=>{m.visible=i+1<=lvl;}));
-    deco.forEach(m=>m.visible=step>=27);socle.forEach(m=>m.visible=step>=28);markers.forEach(m=>m.visible=step===0);
-    anims.length=0;levelMeshes.forEach(a=>a.forEach(m=>m.position.y=m.userData.baseY));deco.concat(socle).forEach(m=>m.position.y=m.userData.baseY);
-    if(prev===step-1){if(STEPS[step].k==='lvl')drop(levelMeshes[step-1]);else if(step===27)drop(deco);else if(step===28)drop(socle);}
+    const K_=STEPS[step].k,after=k=>step>=STEPS.findIndex(s=>s.k===k);deco.forEach(m=>m.visible=after('deco'));figMeshes.forEach(m=>m.visible=after('figs'));carMeshes.forEach(m=>m.visible=after('car'));socle.forEach(m=>m.visible=after('socle'));markers.forEach(m=>m.visible=step===0);
+    anims.length=0;levelMeshes.forEach(a=>a.forEach(m=>m.position.y=m.userData.baseY));deco.concat(socle,figMeshes,carMeshes).forEach(m=>m.position.y=m.userData.baseY);
+    if(prev===step-1){if(K_==='lvl')drop(levelMeshes[step-1]);else if(K_==='deco')drop(deco);else if(K_==='figs')drop(figMeshes);else if(K_==='car')drop(carMeshes);else if(K_==='socle')drop(socle);}
     tgtY=step===0?4:lvl>=NL?15:Math.max(6,Math.min(16,lvl*BH*.55+4));
   }
   let snowing=true,last=0;
@@ -608,7 +706,7 @@ function render(prev){
   let title,notes,plan,planTitle,parts;
   if(st.k==='base'){
     title='Repérer les emplacements<small>Plaque de base</small>';
-    notes=["Posez la plaque blanche 32x32 devant vous, bord avant vers vous. La porte de glace regarde vers vous, l'arrière ouvert est au fond.","La grande salle occupe les colonnes 10 à 23. L'aile basse est à gauche, la chambre à droite.","Devant à gauche : l'escalier de glace et la grotte d'Olaf.","L'allée de glace, les cristaux et les congères viennent à la fin."];
+    notes=["Posez la plaque blanche 32x32 devant vous, bord avant vers vous. La porte de glace regarde vers vous, l'arrière ouvert est au fond.","La grande salle occupe les colonnes 10 à 23. L'aile basse est à gauche, la chambre à droite.","Devant à gauche : l'escalier de glace et la grotte d'Olaf.","Devant à gauche, en bas : Sven le renne. Devant à droite : la voiture d'Elsa. Anna et Elsa se posent sur le balcon.","Personnages, voiture, allée de glace, cristaux et congères viennent à la fin."];
     plan=baseSVG(false);planTitle='Emprises en jaune';parts=addList({},EXTRA.base);
   }else if(st.k==='lvl'){
     const L=LV[st.l-1];
@@ -619,6 +717,14 @@ function render(prev){
     notes=["Une antenne 1x4 de glace sur la pointe de la flèche, puis la tuile ronde 2x2 de glace clipsée debout : c'est l'étoile-flocon. Collez l'autocollant ci-contre dessus.","Olaf dans sa grotte : trois briques rondes 1x1 blanches empilées, un cône 1x1 orange pour le nez. Dessinez les yeux au feutre ou avec un autocollant.","Deux tuiles rondes 1x1 lavande sur la table du balcon : les tasses."];
     plan=`<p style="margin:4px 0 0">Autocollant à l'échelle 1 : imprimez à 100 %, découpez au trait.</p><div class="sticker"><svg width="56" height="56" viewBox="-28 -28 56 56" aria-hidden="true"><g stroke="#fff" stroke-width="2.2" stroke-linecap="round">${[0,60,120,180,240,300].map(a=>`<g transform="rotate(${a})"><path d="M0 0V-24M0-10l5-5M0-10l-5-5M0-17l4-4M0-17l-4-4"/></g>`).join('')}</g></svg></div><p style="margin:0;color:var(--muted);font-size:.9rem">16 mm de diamètre, la taille d'une tuile ronde 2x2.</p>`;
     planTitle='Autocollant flocon';parts=addList({},EXTRA.deco);
+  }else if(st.k==='figs'){
+    title='Elsa, Anna et Sven<small>Les personnages</small>';
+    notes=["À l'étage, sur le balcon : Anna à gauche du trône de gauche, Elsa à droite du trône de droite. Chacune fait 3 tenons de large, 2 de profondeur et 6 rangs de haut. Montez-les rang par rang d'après les petits plans ci-contre, face vers le garde-corps.","Elsa : robe bleu ciel, cape et manches de glace transparentes, natte blond très clair sur l'épaule gauche. Ses manches et sa cape s'allument la nuit.","Anna : jupe bleu foncé, corsage noir, cape et bonnet magenta, deux nattes orange foncé.","En bas, devant la grotte d'Olaf : Sven, le renne, de profil, tête tournée vers Olaf. Pattes en briques rondes, dos nougat, ventre et museau beiges, bois brun foncé.","Les yeux sont dessinés : feutre noir ou petits autocollants ronds sur la brique du visage."];
+    plan=FIGS.map(objPlans).join('');planTitle='Rang par rang, vue de dessus';parts=tallyObjs(FIGS);
+  }else if(st.k==='car'){
+    title="La voiture d'Elsa<small>Cabriolet bleu ciel, blanc et bleu foncé</small>";
+    notes=["La voiture se gare devant la chambre, à droite de l'allée de glace, capot tourné vers la porte du château.","Rang 1 : deux plaques 2x2 à roues noires, jantes blanches.","Rang 2 : le plancher en bleu foncé, 10 tenons sur 6.","Rang 3 : flancs bleu ciel, capot blanc, tableau de bord bleu foncé avec le volant, siège blanc à deux places et coffre bleu ciel. Laissez une rangée vide devant le siège pour les jambes.","Rang 4 : pare-brise de glace, dossiers blancs, ailes avant et arrière blanches, deux ailerons bleu foncé en cônes.","Rang 5 : les phares jaunes transparents sur les ailes avant. Ils s'allument la nuit.","Collez l'autocollant flocon de l'étape 27 en bleu foncé sur le capot. Pour mettre Elsa au volant, retirez ses deux rangs de jupe : le buste se pose sur le siège."];
+    plan=CARS.map(objPlans).join('');planTitle='Rang par rang, vue de dessus';parts=tallyObjs(CARS);
   }else{
     title='Allée de glace et congères<small>Aménagements</small>';
     notes=["Quatre tuiles 2x2 bleu clair transparent devant la porte : l'allée de glace.","Huit cônes 1x1 de glace piqués autour du château, ce sont les cristaux.","Six pentes 2x2 blanches posées à plat au fond et sur les côtés : les congères."];
@@ -634,6 +740,8 @@ function render(prev){
 }
 const ALL={};LV.forEach(L=>{const t=tally(L.groups);for(const k in t)ALL[k]=(ALL[k]||0)+t[k];});
 addList(ALL,EXTRA.base);addList(ALL,EXTRA.deco);addList(ALL,EXTRA.socle);
+{const o=tallyObjs(FIGS.concat(CARS));for(const k in o)ALL[k]=(ALL[k]||0)+o[k];}
+document.getElementById('range').max=LAST;
 const rows=Object.entries(ALL).sort(sortParts);let total=0;
 document.querySelector('#bom tbody').innerHTML=rows.map(([k,q])=>{total+=q;const[p,c]=k.split('|');return `<tr><td><span style="display:flex;gap:8px;align-items:center"><i class="sw${isRound(p)?' round':''}" style="background:${COL[c].hex}"></i>${COL[c].n}</span></td><td>${CAT[p][1]}</td><td>${CAT[p][0]}</td><td class="q">${q}</td></tr>`;}).join('')+`<tr><td colspan="3"><b>Total</b></td><td class="q">${total}</td></tr>`;
 document.getElementById('fPieces').textContent=total;
